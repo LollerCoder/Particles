@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Vector.h"
-
+#include <iostream>
 
 namespace P6 {
 

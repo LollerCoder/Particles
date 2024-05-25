@@ -26,13 +26,13 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 #include "P6/Vector.h"
 #include "P6/Particle.h"
 
-int width = 600;
-int height = 600;
+float width = 600;
+float height = 600;
 
 
 
 
-float x = 0.0f, y = 0.0f, z = 1.0f;
+
 float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
 
 
@@ -334,8 +334,9 @@ int main(void)
     
     //Camera inits
     glm::mat4 iden_Mat = glm::mat4(1.0f);
-    float screen_scale = 40.0f;
-    glm::mat4 projection = glm::ortho(-screen_scale, screen_scale, -screen_scale, screen_scale, -screen_scale, screen_scale);
+    //float screen_scale = 40.0f;
+    //glm::mat4 projection = glm::ortho(-screen_scale, screen_scale, -screen_scale, screen_scale, -screen_scale, screen_scale);
+    glm::mat4 projection = glm::ortho(-width/2, width/2, -height/2, height/2, -100.f, 100.f);
     
     //Vectors
     /*
@@ -360,6 +361,28 @@ int main(void)
 
     std::cout << "DotProduct: " << sample.DotProduct(addTo) << std::endl;
     */
+    
+    //asking velocity start
+    float x, y, z;
+
+    std::cout << "Input the Ball's initial Velocity" << std::endl;
+
+    std::cout << "X:";
+    std::cin >> x;
+
+    std::cout << "Y:";
+    std::cin >> y;
+
+    std::cout << "Z:";
+    std::cin >> z;
+
+
+    //Particle initialize
+    P6::P6Particle particle = P6::P6Particle();
+    particle.Velocity = P6::MyVector(x, y, z);
+    particle.Acceleration = P6::MyVector(0.f, -50.f, 0.f); //acceleration due to gravity
+
+
     //clock initialiaze
     using clock = std::chrono::high_resolution_clock;
     auto curr_time = clock::now();
@@ -367,14 +390,10 @@ int main(void)
     std::chrono::nanoseconds curr_ns(0);
    
 
-    /* sample.ScalarMult(toMult);
-    std::cout << "x: " << sample.x << " y:" << sample.y << " z:" << sample.z << std::endl;
-    */
+   
 
 
-    P6::P6Particle particle = P6::P6Particle();
-    particle.Velocity = P6::MyVector(20, 0, 0);
-    particle.Acceleration = P6::MyVector(-30, 0, 0);
+    
     //1 m = 1 unit
     //1m = 1 px
     /* Loop until the user closes the window */
