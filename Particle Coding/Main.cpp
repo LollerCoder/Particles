@@ -383,6 +383,7 @@ int main(void)
     auto prev_time = curr_time;
     std::chrono::nanoseconds curr_ns(0);
     std::chrono::nanoseconds ns_tracker(0);
+    int buffer;
    
     //1 m = 1 unit
     //1m = 1 px
@@ -410,6 +411,8 @@ int main(void)
             if (particle.Position.y <= height / -2) {
                 std::cout << "It took " << ms_tracker.count() / 1000 << " seconds ";
                 std::cout << "for it to land" << std::endl;
+                std::cout << "Input any letter/number to close..." << std::endl;
+                std::cin >> buffer;
                 glfwSetWindowShouldClose(window, 1);
             }
         }
