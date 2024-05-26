@@ -14,6 +14,7 @@ namespace P6 {
 		MyVector Acceleration;
 	public:
 		P6Particle();
+		P6Particle(float m, MyVector pos, MyVector vel, MyVector accel);
 	public:
 		void UpdateVelocity(float time);
 		void UpdatePosition(float time);
