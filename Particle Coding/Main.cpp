@@ -372,7 +372,7 @@ int main(void)
 
     //Particle initialize
     P6::P6Particle particle = P6::P6Particle(1.0f, 
-        P6::MyVector(0.f,width/-2 + 1, 0.f),
+        P6::MyVector(0.f,height/-2 + 1, 0.f),
         P6::MyVector(x, y, z), 
         P6::MyVector(0.f, -50.f, 0.f));
 
@@ -405,7 +405,9 @@ int main(void)
 
             //updates here
             particle.Update((float)ms.count() / 1000);
-            if (particle.Position.y <= width / -2) {
+
+            //stop when hit ground
+            if (particle.Position.y <= height / -2) {
                 std::cout << "It took " << ms_tracker.count() / 1000 << " seconds ";
                 std::cout << "for it to land" << std::endl;
                 glfwSetWindowShouldClose(window, 1);
