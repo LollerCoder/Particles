@@ -29,14 +29,7 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 float width = 600;
 float height = 600;
 
-
-
-
-
 float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
-
-
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -93,7 +86,7 @@ int main(void)
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(width, height , "Jairo Jaropojop", NULL, NULL);
+    window = glfwCreateWindow(width, height , "Jaropojop und Reblando", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -378,9 +371,10 @@ int main(void)
 
 
     //Particle initialize
-    P6::P6Particle particle = P6::P6Particle();
-    particle.Velocity = P6::MyVector(x, y, z);
-    particle.Acceleration = P6::MyVector(0.f, -50.f, 0.f); //acceleration due to gravity
+    P6::P6Particle particle = P6::P6Particle(1.0f, 
+        P6::MyVector(0.f,width/-2 + 1, 0.f),
+        P6::MyVector(x, y, z), 
+        P6::MyVector(0.f, -50.f, 0.f));
 
 
     //clock initialiaze
@@ -388,12 +382,8 @@ int main(void)
     auto curr_time = clock::now();
     auto prev_time = curr_time;
     std::chrono::nanoseconds curr_ns(0);
+    std::chrono::nanoseconds ns_tracker(0);
    
-
-   
-
-
-    
     //1 m = 1 unit
     //1m = 1 px
     /* Loop until the user closes the window */
@@ -406,14 +396,20 @@ int main(void)
         prev_time = curr_time;
 
         curr_ns += dur;
+        ns_tracker += dur;
         if (curr_ns >= timestep) {
             auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(curr_ns);
+            auto ms_tracker = std::chrono::duration_cast<std::chrono::milliseconds>(ns_tracker);
 
             curr_ns -= curr_ns;
 
             //updates here
             particle.Update((float)ms.count() / 1000);
-           // std::cout << "p6 upd" << std::endl;
+            if (particle.Position.y <= width / -2) {
+                std::cout << "It took " << ms_tracker.count() / 1000 << " seconds ";
+                std::cout << "for it to land" << std::endl;
+                glfwSetWindowShouldClose(window, 1);
+            }
         }
         //std::cout << "normal upd" << std::endl;
 
