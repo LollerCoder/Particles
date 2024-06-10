@@ -21,5 +21,7 @@ namespace P6 {
 		
 	public:
 		void Update(float time);
+
+	public:
 	};
 }

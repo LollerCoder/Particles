@@ -12,7 +12,7 @@ namespace P6 {
 
 	public:
 		MyVector();
-
+		MyVector(glm::vec3 vec3);
 		MyVector(const float _x, const float _y, const float _z);
 		
 	public:
@@ -28,7 +28,7 @@ namespace P6 {
 		
 		float Magnitude();//1 Magnitude
 		glm::vec3 Direction();//2 Direction
-		void ScalarMult(float i);//5 ScalarMult
+		glm::vec3 ScalarMult(float i);//5 ScalarMult
 		float DotProduct(MyVector v);//7 Scalar Product
 		glm::vec3 VectorProduct(MyVector v); //8 Cross Product
 		

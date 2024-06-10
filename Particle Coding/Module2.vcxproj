@@ -142,12 +142,16 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="P6\PhysicsWorld.cpp" />
     <ClCompile Include="P6\Vector.cpp" />
     <ClCompile Include="P6\Particle.cpp" />
+    <ClCompile Include="Renderer\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="P6\Particle.h" />
+    <ClInclude Include="P6\PhysicsWorld.h" />
     <ClInclude Include="P6\Vector.h" />
+    <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>

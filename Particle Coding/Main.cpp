@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -25,11 +26,25 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 
 #include "P6/Vector.h"
 #include "P6/Particle.h"
+#include "P6/PhysicsWorld.h"
 
-float width = 600;
-float height = 600;
+#include "Renderer/Shader.h"
+
+/*========GLOBAL VARIABLES=========*/
+//window dimensions
+float width = 700;
+float height = 700;
 
 float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
+
+//structs
+struct Racer{
+    std::string name;
+    int position;
+    P6::MyVector finalVelocity;
+    P6::MyVector averVelocity;
+    float finishedTime;
+}racer_red, racer_green, racer_blue, racer_yellow;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -72,151 +87,9 @@ void processInput(GLFWwindow* window)
 }
 
 
+std::vector<GLfloat> getFullVertexData(std::string pathName) {
 
-
-int main(void)
-{
-    
-    GLFWwindow* window;
-
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
-
-
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(width, height , "Jaropojop und Reblando", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    
-;    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-    gladLoadGL();
-
-    std::fstream vertSrc("Shaders/vertShader.vert");
-    std::stringstream vertBuff;
-
-    vertBuff << vertSrc.rdbuf();
-
-    std::string vertS = vertBuff.str();
-    const char* v = vertS.c_str();
-
-    std::fstream fragSrc("Shaders/fragShader.frag");
-    std::stringstream fragBuff;
-
-    fragBuff << fragSrc.rdbuf();
-
-    std::string fragS = fragBuff.str();
-    const char* f = fragS.c_str();
-
-    //create vertex shader(used for movements)
-    GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertShader, 1, &v, NULL);
-
-    glCompileShader(vertShader);
-
-    GLint isCompiled2 = 0;
-    glGetShaderiv(vertShader, GL_COMPILE_STATUS, &isCompiled2);
-    if (isCompiled2 == GL_FALSE)
-    {
-        GLint maxLength = 0;
-        glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-        // The maxLength includes the NULL character
-        std::vector<GLchar> errorLog(maxLength);
-        glGetShaderInfoLog(vertShader, maxLength, &maxLength, &errorLog[0]);
-
-        // Provide the infolog in whatever manor you deem best.
-        // Exit with failure.
-        //glDeleteShader(vertShader); // Don't leak the shader.
-        //return;
-        std::cout << &errorLog[0] << std::endl;
-    }
-    
-
-
-
-    //create frag shader (our objects are turned into pixels/fragments which we will use to color in an object)
-    GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(fragShader, 1, &f, NULL);
-
-    glCompileShader(fragShader);
-
-    
-
-    GLint isCompiled = 0;
-    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE)
-    {
-        GLint maxLength = 0;
-        glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-        // The maxLength includes the NULL character
-        std::vector<GLchar> errorLog(maxLength);
-        glGetShaderInfoLog(fragShader, maxLength, &maxLength, &errorLog[0]);
-
-        // Provide the infolog in whatever manor you deem best.
-        // Exit with failure.
-        //glDeleteShader(fragShader); // Don't leak the shader.
-        //return;
-        std::cout << &errorLog[0] << std::endl;
-    }
-
-
-    
-
-    //create shader program that'll just run both frag and vert together as one.
-    GLuint shaderProg = glCreateProgram();
-    glAttachShader(shaderProg, vertShader);
-    glAttachShader(shaderProg, fragShader);
-
-    glLinkProgram(shaderProg);//compile to make sure computer remembers
-    glDeleteShader(vertShader);
-    glDeleteShader(fragShader);
-
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    
-    
-
-
-
-
-    //float vertices[] = {
-    //    // positions          // colors           // texture coords
-    //    0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-    //    0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    //   -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    //   -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-    //};
-    //unsigned int indices[] = {  // note that we start from 0!
-    //    0, 1, 3,   // first triangle
-    //    1, 2, 3    // second triangle
-    //};
-    /*EBO which order to draw indices
-    * consists  generate,bindbuffer and buffer data
-    * 
-    * generate makes, bindbuffer sets what is currenting being edited
-    * bufferdata copies our necessary data onto said buffer.\
-    * 
-    VBO, what the data is 
-    consists of bind buffer and bufferdata
-    VAO how the shaders see the data
-    consists of glVertexAttribPointer 
-    * how the shaders is supposed to know which object is one thing and which is another
-    and glenablevertexattribpointer
-    * how shader knows its active and to be used;
-    */
-    //=================models================//
-
-    std::string path = "3D/sphere.obj";
+    std::string path = pathName;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -266,28 +139,109 @@ int main(void)
         );
 
         fullVertexData.push_back(
-            attributes.texcoords[(vData.texcoord_index * 2) +1]
+            attributes.texcoords[(vData.texcoord_index * 2) + 1]
         );
 
-        
-      
     }
 
-    /*std::string path2 = "3D/myCube.obj";
-    std::vector<tinyobj::shape_t> shapes2;
-    std::vector<tinyobj::material_t> material2;
-    std::string warning2, error2;
+    return fullVertexData;
+}
 
-    tinyobj::attrib_t attributes2;
+glm::mat4 getTransMat(glm::vec3 position) {
 
-    bool success = tinyobj::LoadObj(
-        &attributes2,
-        &shapes2,
-        &material2,
-        &warning2,
-        &error2,
-        path2.c_str()
-    );*/
+    glm::mat4 iden_Mat = glm::mat4(1.0f);
+
+    glm::mat4 trans_Mat = glm::translate(iden_Mat, position);
+
+    //X-rotation
+    trans_Mat = glm::rotate(
+        trans_Mat,
+        glm::radians(xRot),
+        glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f))
+
+    );//give quat
+
+    //Y-rotation
+    trans_Mat = glm::rotate(
+        trans_Mat,
+        glm::radians(yRot),
+        glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))
+    );
+
+    //Z-rotation
+    trans_Mat = glm::rotate(
+        trans_Mat,
+        glm::radians(zRot),
+        glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f))
+    );
+
+    return trans_Mat;
+}
+
+float roundOff(float var)
+{
+    float value = (int)(var * 100 + .5);
+    return (float)value / 100;
+}
+
+void printRaceResults(std::vector<Racer> racers) {
+    for (int i = 0; i < (int)racers.size(); i++)
+    {
+        racers[i].position = i + 1;
+        std::cout << "Ranking: " << racers[i].position << std::endl;
+        std::cout << "Name: " << racers[i].name << std::endl;
+        std::cout << "Mag. Velocity: " << roundOff(racers[i].finalVelocity.Magnitude()) << " m/s" << std::endl;
+
+        std::cout << "Average Velocity: (" << roundOff(racers[i].averVelocity.x) << ", ";
+        std::cout << roundOff(racers[i].averVelocity.y) << ", " << roundOff(racers[i].averVelocity.z);
+        std::cout << ")m/s" << std::endl;
+
+        std::cout << roundOff(racers[i].finishedTime / 1000) << " seconds" << std::endl << std::endl;
+    }
+}
+
+bool compareByFloat(const Racer& a, const Racer& b) {
+    return a.finishedTime < b.finishedTime; // Sort in descending order
+}
+
+std::vector<Racer> getRacerRankings(const std::vector<Racer> racers) {
+    std::vector<Racer> sortedVector = racers;
+    std::sort(sortedVector.begin(), sortedVector.end(), compareByFloat);
+    return sortedVector;
+}
+
+
+
+int main(void)
+{
+    
+    GLFWwindow* window;
+
+    /* Initialize the library */
+    if (!glfwInit())
+        return -1;
+
+    /* Create a windowed mode window and its OpenGL context */
+    window = glfwCreateWindow(width, height , "PC01 Reblando", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+
+;    /* Make the window's context current */
+    glfwMakeContextCurrent(window);
+    gladLoadGL();
+
+    
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    
+    //=================models================//
+
+    std::vector<GLfloat> fullVertexData = getFullVertexData("3D/sphere.obj");
+
     //=================VBO/VAO==========//
 
     unsigned int VBO, VAO;
@@ -315,67 +269,76 @@ int main(void)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)UVptr);
     glEnableVertexAttribArray(2);
 
-    
-
-
-    
-    
-    
-
-    
 
     
     //Camera inits
-    glm::mat4 iden_Mat = glm::mat4(1.0f);
     //float screen_scale = 40.0f;
     //glm::mat4 projection = glm::ortho(-screen_scale, screen_scale, -screen_scale, screen_scale, -screen_scale, screen_scale);
-    glm::mat4 projection = glm::ortho(-width/2, width/2, -height/2, height/2, -100.f, 100.f);
+    glm::mat4 projection = glm::ortho(-width/2, width/2, -height/2, height/2, -350.f, 350.f);
     
-    //Vectors
-    /*
-    P6::MyVector sample(1.0f, 2.0f, 3.0f);
-    P6::MyVector addTo(2.0f, 2.0f, 3.0f);
 
-   
-    float toMult = 2.0f;
+    //Initialize particles
 
-    //sample = sample + addTo;
-    sample += addTo;
-    std::cout << "Magnitude: " << sample.Magnitude() << std::endl;
-    std::cout << "Direction: " << sample.Direction().x <<" " << sample.Direction().y << " " << sample.Direction().z << std::endl;
-    std::cout << "x: " << sample.x << " y:" << sample.y << " z:" << sample.z << std::endl;
-    glm::vec3 test = sample.VectorProduct(addTo);
-    std::cout << "Vector Product: " << test.x << " " << test.y << " " << test.z << std::endl;
-    sample -= addTo;
-    std::cout << "x: " << sample.x << " y:" << sample.y << " z:" << sample.z << std::endl;
+    std::vector<P6::P6Particle*> particles;
+    for (int i = 0; i < 4; i++)
+    {
+        particles.push_back(
+            new P6::P6Particle);
+    }
 
-    sample *= addTo;
-    std::cout << "x: " << sample.x << " y:" << sample.y << " z:" << sample.z << std::endl;
+    //Red particle
+    particles[0]->Position = {width/-2, height/2, 201.0f};
+    P6::MyVector direction = P6::MyVector(particles[0]->Position.Direction());
+    particles[0]->Velocity = P6::MyVector(direction.ScalarMult(-80.0f));
+    P6::MyVector redInitVel = particles[0]->Velocity;
+    particles[0]->Acceleration = P6::MyVector(direction.ScalarMult(-14.5f));
 
-    std::cout << "DotProduct: " << sample.DotProduct(addTo) << std::endl;
-    */
+    //Green particle
+    particles[1]->Position = { width / 2, height / 2, 173.0f };
+    direction = P6::MyVector(particles[1]->Position.Direction());
+    particles[1]->Velocity = P6::MyVector(direction.ScalarMult(-90.0f));
+    P6::MyVector greenInitVel = particles[1]->Velocity;
+    particles[1]->Acceleration = P6::MyVector(direction.ScalarMult(-8.0f));
+
+    //blue particle
+    particles[2]->Position = { width / 2, height / -2, -300.0f };
+    direction = P6::MyVector(particles[2]->Position.Direction());
+    particles[2]->Velocity = P6::MyVector(direction.ScalarMult(-130.0f));
+    P6::MyVector blueInitVel = particles[2]->Velocity;
+    particles[2]->Acceleration = P6::MyVector(direction.ScalarMult(-1.0f));
+
+    //yellow particle
+    particles[3]->Position = { width / -2, height / -2, -150.0f };
+    direction = P6::MyVector(particles[3]->Position.Direction());
+    particles[3]->Velocity = P6::MyVector(direction.ScalarMult(-110.0f));
+    P6::MyVector yellowInitVel = particles[3]->Velocity;
+    particles[3]->Acceleration = P6::MyVector(direction.ScalarMult(-3.0f));
+
+    std::vector<glm::vec3> rgb_values;
+    rgb_values.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); //red
+    rgb_values.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //green
+    rgb_values.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //blue
+    rgb_values.push_back(glm::vec3(1.0f, 1.0f, 0.0f)); //yellow
     
-    //asking velocity start
-    float x, y, z;
+    //physics world
+    /*P6::PhysicsWorld physicsWorld;
+    for (int i = 0; i < 4; i++)
+    {
+        P6::P6Particle* particle = new P6::P6Particle(
+            1.0f,
+            P6::MyVector(-100.0f + 50.0f*i, height / -2 + 1, 0.f),
+            P6::MyVector(x, y, z),
+            P6::MyVector(0.f, -50.f, 0.f)
+        );
+    }*/
 
-    std::cout << "Input the Ball's initial Velocity" << std::endl;
-
-    std::cout << "X:";
-    std::cin >> x;
-
-    std::cout << "Y:";
-    std::cin >> y;
-
-    std::cout << "Z:";
-    std::cin >> z;
-
-
-    //Particle initialize
-    P6::P6Particle particle = P6::P6Particle(1.0f, 
-        P6::MyVector(0.f,height/-2 + 1, 0.f),
-        P6::MyVector(x, y, z), 
-        P6::MyVector(0.f, -50.f, 0.f));
-
+    //Getting Shader
+    std::vector<Renderer::Shader> particleShaders;
+    for (int i = 0; i < particles.size(); i++)
+    {
+        Renderer::Shader particleShader("Shaders/vertShader.vert", "Shaders/fragShader.frag");
+        particleShaders.push_back(particleShader);
+    }
 
     //clock initialiaze
     using clock = std::chrono::high_resolution_clock;
@@ -385,6 +348,23 @@ int main(void)
     std::chrono::nanoseconds ns_tracker(0);
     int buffer;
    
+    /*==============RACING VALUES=============*/
+    bool isRedFinished = false;
+    bool isBlueFinished = false;
+    bool isGreenFinished = false;
+    bool isYellowFinished = false;
+
+    std::vector<Racer> vecRacers;
+    vecRacers.push_back(racer_red);
+    vecRacers.push_back(racer_green);
+    vecRacers.push_back(racer_blue);
+    vecRacers.push_back(racer_yellow);
+
+    vecRacers[0].name = "Red";
+    vecRacers[1].name = "Green";
+    vecRacers[2].name = "Blue";
+    vecRacers[3].name = "Yellow";
+
     //1 m = 1 unit
     //1m = 1 px
     /* Loop until the user closes the window */
@@ -401,16 +381,69 @@ int main(void)
         if (curr_ns >= timestep) {
             auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(curr_ns);
             auto ms_tracker = std::chrono::duration_cast<std::chrono::milliseconds>(ns_tracker);
-
             curr_ns -= curr_ns;
 
             //updates here
-            particle.Update((float)ms.count() / 1000);
+            for (P6::P6Particle* par : particles)
+            {
+                par->Update((float)ms.count() / 1000);
+            }
 
-            //stop when hit ground
-            if (particle.Position.y <= height / -2) {
-                std::cout << "It took " << ms_tracker.count() / 1000 << " seconds ";
-                std::cout << "for it to land" << std::endl;
+            //check if red finished
+            if (particles[0]->Position.x >= 0 && particles[0]->Position.y <= 0
+                && !isRedFinished) {
+                //putting the final values
+                vecRacers[0].finishedTime = std::chrono::duration_cast<std::chrono::milliseconds>(ns_tracker).count();
+                vecRacers[0].finalVelocity = particles[1]->Velocity;
+                vecRacers[0].averVelocity = (redInitVel + vecRacers[0].finalVelocity) / 2;
+                //Stopping the particle from moving
+                particles[0]->Velocity = { 0,0,0 };
+                particles[0]->Acceleration = { 0,0,0 };
+                isRedFinished = true;
+            }
+
+            if (particles[1]->Position.x <= 0 && particles[1]->Position.y <= 0 
+                && !isGreenFinished) {
+                //putting the final values
+                vecRacers[1].finishedTime = std::chrono::duration_cast<std::chrono::milliseconds>(ns_tracker).count();
+                vecRacers[1].finalVelocity = particles[1]->Velocity;
+                vecRacers[1].averVelocity = (greenInitVel + vecRacers[1].finalVelocity) / 2;
+                //Stopping the particle from moving
+                particles[1]->Velocity = { 0,0,0 };
+                particles[1]->Acceleration = { 0,0,0 };
+                
+                isGreenFinished = true;
+            }
+            if (particles[2]->Position.x <= 0 && particles[2]->Position.y >= 0
+                && !isBlueFinished) {
+                //putting the final values
+                vecRacers[2].finishedTime = std::chrono::duration_cast<std::chrono::milliseconds>(ns_tracker).count();
+                vecRacers[2].finalVelocity = particles[1]->Velocity;
+                vecRacers[2].averVelocity = (blueInitVel + vecRacers[2].finalVelocity) / 2;
+                //Stopping the particle from moving
+                particles[2]->Velocity = { 0,0,0 };
+                particles[2]->Acceleration = { 0,0,0 };
+                isBlueFinished = true;
+            }
+            if (particles[3]->Position.x >= 0 && particles[3]->Position.y >= 0
+                && !isYellowFinished) {
+                //putting the final values
+                vecRacers[3].finishedTime = std::chrono::duration_cast<std::chrono::milliseconds>(ns_tracker).count();
+                vecRacers[3].finalVelocity = particles[1]->Velocity;
+                vecRacers[3].averVelocity = (yellowInitVel + vecRacers[3].finalVelocity) / 2;
+                //Stopping the particle from moving
+                particles[3]->Velocity = { 0,0,0 };
+                particles[3]->Acceleration = { 0,0,0 };
+                isYellowFinished = true;
+            }
+
+            if (isRedFinished && isYellowFinished &&
+                isBlueFinished && isGreenFinished) {
+
+                printRaceResults(getRacerRankings(vecRacers));
+
+
+                //buffer so it won't close immeditietly
                 std::cout << "Input any letter/number to close..." << std::endl;
                 std::cin >> buffer;
                 glfwSetWindowShouldClose(window, 1);
@@ -423,57 +456,22 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* Render here */
-        
-        glm::mat4 trans_Mat = glm::translate(iden_Mat, glm::vec3((glm::vec3)particle.Position));
 
+        for (int i = 0; i < particles.size(); i++)
+        {
+            glm::mat4 trans_mat = getTransMat((glm::vec3)particles[i]->Position);
+            particleShaders[i].use();
+            particleShaders[i].setInt("ourTexture", 0);
+            particleShaders[i].setInt("ourText", 1);
+            particleShaders[i].setMat4("transform", trans_mat);
+            particleShaders[i].setMat4("projection", projection);
+            particleShaders[i].setFloat("red", rgb_values[i].x);
+            particleShaders[i].setFloat("green", rgb_values[i].y);
+            particleShaders[i].setFloat("blue", rgb_values[i].z);
 
-
-        //X-rotation
-        trans_Mat = glm::rotate(
-            trans_Mat,
-            glm::radians(xRot),
-            glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f))
-
-        );//give quat
-
-        //Y-rotation
-        trans_Mat = glm::rotate(
-            trans_Mat,
-            glm::radians(yRot),
-            glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))
-        );
-
-        //Z-rotation
-        trans_Mat = glm::rotate(
-            trans_Mat,
-            glm::radians(zRot),
-            glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f))
-        );
-        
-        glUseProgram(shaderProg);
-
-        GLuint tex = glGetUniformLocation(shaderProg, "ourTexture");
-        glUniform1i(tex, 0);
-
-        GLuint tex1 = glGetUniformLocation(shaderProg, "ourText");
-        glUniform1i(tex1, 1);
-
-        
-        GLuint transLoc = glGetUniformLocation(shaderProg, "transform");
-        glUniformMatrix4fv(transLoc, 1, GL_FALSE, glm::value_ptr(trans_Mat));
-
-        GLuint projLoc = glGetUniformLocation(shaderProg, "projection");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        
-
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, fullVertexData.size() / 8);
-
-
-        
-       
-        
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, i, fullVertexData.size() / 8);
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -483,8 +481,11 @@ int main(void)
     }
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    
-    glDeleteProgram(shaderProg);
+
+    for (auto particleShader : particleShaders) {
+        glDeleteProgram(particleShader.getID());
+    }
+    //glDeleteProgram(shaderProg);
     glfwTerminate();
     return 0;
 }

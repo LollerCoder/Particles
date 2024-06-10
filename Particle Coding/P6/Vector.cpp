@@ -5,6 +5,13 @@ using namespace P6;
 
 MyVector::MyVector() : x(0), y(0), z(0) {}
 
+P6::MyVector::MyVector(glm::vec3 vec3)
+{
+	this->x = vec3.x;
+	this->y = vec3.y;
+	this->z = vec3.z;
+}
+
 MyVector::MyVector(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z) {}
 
 
@@ -61,10 +68,12 @@ glm::vec3 MyVector::Direction() {
 		this->z / this->Magnitude());
 }
 
-void MyVector::ScalarMult(float i) {
-	this->x *= i,
-		this->y *= i,
-		this->z *= i;
+glm::vec3 MyVector::ScalarMult(float i) {
+	return {
+		this->x * i,
+		this->y * i,
+		this->z * i
+	};
 }
 
 float  MyVector::DotProduct(MyVector v) {
