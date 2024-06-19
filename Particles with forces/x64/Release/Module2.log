@@ -1,0 +1,58 @@
+﻿  DragForceGenerator.cpp
+  Main.cpp
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\P6\DragForceGenerator.h(10,14): warning C4305: 'initializing': truncation from 'double' to 'float'
+  (compiling source file 'P6/DragForceGenerator.cpp')
+  
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\P6\DragForceGenerator.h(12,14): warning C4305: 'initializing': truncation from 'double' to 'float'
+  (compiling source file 'P6/DragForceGenerator.cpp')
+  
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\P6\GravityForceGenerator.h(9,35): warning C4305: 'argument': truncation from 'double' to 'const float'
+  (compiling source file 'Main.cpp')
+  
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\P6\PhysicsWorld.h(26,70): warning C4305: 'argument': truncation from 'double' to 'const float'
+  (compiling source file 'Main.cpp')
+  
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\P6\DragForceGenerator.h(10,14): warning C4305: 'initializing': truncation from 'double' to 'float'
+  (compiling source file 'Main.cpp')
+  
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\P6\DragForceGenerator.h(12,14): warning C4305: 'initializing': truncation from 'double' to 'float'
+  (compiling source file 'Main.cpp')
+  
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(85,14): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(111,21): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(114,21): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(119,21): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(122,21): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(127,21): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(130,21): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(154,38): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(154,31): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(401,64): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(401,58): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(435,26): warning C4244: 'argument': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(435,26): warning C4244:         with
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(435,26): warning C4244:         [
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(435,26): warning C4244:             _Rep=__int64
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(435,26): warning C4244:         ]
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(440,26): warning C4244: 'argument': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(440,26): warning C4244:         with
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(440,26): warning C4244:         [
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(440,26): warning C4244:             _Rep=__int64
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(440,26): warning C4244:         ]
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(444,26): warning C4244: 'argument': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(444,26): warning C4244:         with
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(444,26): warning C4244:         [
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(444,26): warning C4244:             _Rep=__int64
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(444,26): warning C4244:         ]
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(448,27): warning C4244: 'argument': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(448,27): warning C4244:         with
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(448,27): warning C4244:         [
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(448,27): warning C4244:             _Rep=__int64
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(448,27): warning C4244:         ]
+C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\Main.cpp(412,9): warning C4101: 'buffer': unreferenced local variable
+  Generating code
+  3 of 2267 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    2 functions were new in current compilation
+    14 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Module2.vcxproj -> C:\Users\Darien\Desktop\Code\GDPHYS\Race with renderPart - Copy\x64\Release\Particle.exe
