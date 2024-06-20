@@ -307,6 +307,7 @@ int main(void)
 
     srand((unsigned)time(0));
     float randomXForce = 0, randomYForce = 0, randomZForce = 0, randomSize = 0;
+    int coneRadius = 2500;
 
     for (int i = 0; i < particleAmount; i++)
     {
@@ -316,16 +317,16 @@ int main(void)
         Model3D* newParticleModel = new Model3D({0,0,0});
         P6::P6Particle* newParticle = new P6::P6Particle(
             1.0f,
-            P6::MyVector(0, -height/2.0f, 0),
+            P6::MyVector(0, -height/2.0f + 10.0f, 0),
             P6::MyVector(0, 0, 0),
             P6::MyVector(0.f, 0.f, 0.f)
             );
 
         //FORCE
-        randomXForce = GetRandomInt(0, 6000);
+        randomXForce = GetRandomInt(0, coneRadius);
         if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
 
-        randomZForce = GetRandomInt(0, 6000);
+        randomZForce = GetRandomInt(0, coneRadius);
         if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
 
         randomYForce = GetRandomInt(1000, 6000);
