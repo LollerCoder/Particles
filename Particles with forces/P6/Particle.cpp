@@ -43,6 +43,12 @@ void P6Particle::Update(float time) {
 
 	//reset forces
 	this->ResetForce();
+
+	//lifespan
+	this->lifeSpan -= time;
+	if (this->lifeSpan <= 0) {
+		this->Destroy();
+	}
 }
 
 void P6Particle::Destroy() {

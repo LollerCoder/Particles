@@ -348,6 +348,9 @@ int main(void)
         //std::cout << "Rand size: " << randomSize << std::endl;
         newParticleModel->setScale(randomSize, randomSize, randomSize);
 
+        //GIVING LIFE
+        newParticle->lifeSpan = GetRandomFloat(1.0f, 10.f);
+
         //ADDING IT TO THE LISTS
         pWorld.AddParticle(newParticle);
         RenderParticle* newRP = new RenderParticle(newParticle, newParticleModel, color, &sphereShader, &VAO, &fullVertexData);

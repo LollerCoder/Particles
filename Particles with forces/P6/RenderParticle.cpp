@@ -7,8 +7,7 @@ void RenderParticle::Draw() {
 		//set pos
 		RenderObject->setPos(this->PhysicsParticle->Position.x, this->PhysicsParticle->Position.y, this->PhysicsParticle->Position.z);
 
-		
+		RenderObject->draw(this->shaderProg, this->VAO, this->fullVertexData);
 
 	}
-	RenderObject->draw(this->shaderProg, this->VAO, this->fullVertexData);
 }

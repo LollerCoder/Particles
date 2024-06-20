@@ -17,6 +17,8 @@ namespace P6 {
 		MyVector avgVel = MyVector(0.0f, 0.0f, 0.0f);
 		float time = 0.0f;
 		MyVector initVel = MyVector(0.0f, 0.0f, 0.0f);
+	public://fireworks
+		float lifeSpan = 1.0f;
 	public:
 		float mass;
 		MyVector Position;
