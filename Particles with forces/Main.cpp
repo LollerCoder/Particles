@@ -35,8 +35,18 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 #include "P6/ForceGenerator.h"
 #include "P6/DragForceGenerator.h"
 
+<<<<<<< Updated upstream
 float width = 700;
 float height = 700;
+=======
+//Camera
+#include "Camera/Camera.h"
+#include "Camera/OrthoCamera.h"
+#include "Camera/PerspectiveCamera.h"
+
+float width = 800;
+float height = 800;
+>>>>>>> Stashed changes
 
 float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
 
@@ -47,11 +57,66 @@ Model3D circ2({ 0,0,0 });
 Model3D circ3({ 0,0,0 });
 Model3D circ4({ 0,0,0 });
 
+//camera
+OrthoCamera orthoCam({ 0,0,0 }, { 0,1,0 }, { 0.1,0.1,1 }, height, width, width, true);
+PerspectiveCamera persCam({ 0,0,-400 }, { 0,1,0 }, { 0,0,1 }, 90.f, height, width, 800, false);//test view
+glm::vec3 moveCam({ 0, 0, 0 });
+
+float pitch = 0.0f;
+float yaw = -90.0f;
+
+int camState = 0;
+
 //race
 float rank = 1;
 float gone = 0;
 
+
 std::vector <P6::P6Particle*> res;
+
+glm::vec3 camRotation(bool vertical, bool pos) {
+    const float speed = 0.1f;
+
+
+    if (vertical) {
+        if (pos) {
+            pitch += speed;//y
+        }
+        else {
+            pitch -= speed;//y
+        }
+
+    }
+    else {
+        if (pos) {
+            yaw += speed; //x
+        }
+        else {
+            yaw -= speed; //x
+        }
+
+    }
+
+
+
+    //making sure that you can't 360 via neck breaking
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    //setting front and the change
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
+    direction.y = sin(glm::radians(pitch)) * 400;
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
+    return  direction;
+    //cameraPos = (direction);
+    //std::cout << direction.x << "" << direction.y << "" << direction.z << std::endl;
+
+    //Front = glm::vec3(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+}
 
 void result() {
     int num = 1;
@@ -105,35 +170,68 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    
+
+
+    if (glfwGetKey(window, GLFW_KEY_1)) {
+        if (camState != 0) {
+            camState = 0;
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_2)) {
+        if (camState != 1) {
+            camState = 1;
+        }
+    }
     //yrot
     if (glfwGetKey(window, GLFW_KEY_A)) {
-        yRot -= 0.05;
+        moveCam = camRotation(false, false);
+        if (camState == 0) {
+            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
+        }
+        if (camState == 1) {
+            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
+        }
     }
     if (glfwGetKey(window, GLFW_KEY_D)) {
-        yRot += 0.05;
+        moveCam = camRotation(false, true);
+        if (camState == 0) {
+            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
+        }
+        if (camState == 1) {
+            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
+        }
     }
 
     //xRot
     if (glfwGetKey(window, GLFW_KEY_S)) {
-        xRot -= 0.05;
+
+        moveCam = camRotation(true, false);
+        if (camState == 0) {
+            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
+        }
+        if (camState == 1) {
+            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
+        }
+
+
     }
     if (glfwGetKey(window, GLFW_KEY_W)) {
-        xRot += 0.05;
+
+        moveCam = camRotation(true, true);
+        if (camState == 0) {
+            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
+        }
+        if (camState == 1) {
+            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
+        }
+
     }
 
-    //zRot
-    if (glfwGetKey(window, GLFW_KEY_Q)) {
-        zRot -= 0.05;
-    }
-    if (glfwGetKey(window, GLFW_KEY_E)) {
-        zRot += 0.05;
-    }
 
-        
-    
-    
-        
+
+
+
+
 }
 
 
@@ -330,6 +428,7 @@ int main(void)
 
     //Particle initialize
     //red
+    /*
     P6::P6Particle p1 = P6::P6Particle(1.0f, 
         P6::MyVector(-width/2,0, 201.f),
         P6::MyVector(0,0,0 ), 
@@ -346,8 +445,9 @@ int main(void)
 
     pWorld.AddParticle(&p1);
     RenderParticle rp1 = RenderParticle(&p1, &circ, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles.push_back(&rp1);
+    RenderParticles.push_back(&rp1);*/
 
+<<<<<<< Updated upstream
     //green
     P6::P6Particle p2 = P6::P6Particle(1.0f,
         P6::MyVector(width/2, height / 2, 173.0f),
@@ -358,6 +458,11 @@ int main(void)
     p2.Acceleration = dir.ScalarMult(-8);
     p2.initVel = p2.Velocity;
     p2.name = "Green";
+=======
+
+    P6::MyVector color = P6::MyVector(1.0, 0.0, 0.0);
+    int particleAmount = 0;
+>>>>>>> Stashed changes
 
     color = P6::MyVector(0.0, 1.0, 0.0);
     pWorld.AddParticle(&p2);
@@ -365,6 +470,12 @@ int main(void)
     RenderParticles.push_back(&rp2);
    
 
+<<<<<<< Updated upstream
+=======
+    srand((unsigned)time(0));
+    float randomXForce = 0, randomYForce = 0, randomZForce = 0, randomSize = 0;
+    int coneRadius = 2000;
+>>>>>>> Stashed changes
 
     //blue
     P6::P6Particle p3 = P6::P6Particle(1.0f,
@@ -398,8 +509,9 @@ int main(void)
 
 
     //drag
+    /*
     P6::DragForceGenerator drag = P6::DragForceGenerator(0.14, 0.1);
-    pWorld.forceRegistry.Add(&p1, &drag);
+    pWorld.forceRegistry.Add(&p1, &drag);*/
 
 
 
@@ -430,6 +542,7 @@ int main(void)
 
             curr_ns -= curr_ns;
 
+<<<<<<< Updated upstream
             if (AtCenter(p1) && !p1.finished) {
                 p1.Destroy();
                 race(&p1,ms_tracker);
@@ -447,6 +560,9 @@ int main(void)
                 p4.Destroy();
                 race(&p4, ms_tracker);
             }
+=======
+    
+>>>>>>> Stashed changes
             //updates here
             pWorld.Update((float)ms.count() / 1000);
             
@@ -461,36 +577,48 @@ int main(void)
 
         /* Render here */
         
-        glm::mat4 trans_Mat = glm::translate(iden_Mat, glm::vec3((glm::vec3)p1.Position));
-
-
-
-        //X-rotation
-        trans_Mat = glm::rotate(
-            trans_Mat,
-            glm::radians(xRot),
-            glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f))
-
-        );//give quat
-
-        //Y-rotation
-        trans_Mat = glm::rotate(
-            trans_Mat,
-            glm::radians(yRot),
-            glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))
-        );
-
-        //Z-rotation
-        trans_Mat = glm::rotate(
-            trans_Mat,
-            glm::radians(zRot),
-            glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f))
-        );
-
         //draws
         //red
+
+        P6::MyVector converter{ 0,0,0 };
+
+        switch (camState) {
+        case 0:
+
+            orthoCam.setCameraPos(moveCam);
+
+
+
+
+
+
+            converter = P6::MyVector{ orthoCam.getCameraPos().x,orthoCam.getCameraPos().y ,orthoCam.getCameraPos().z };//this makes a myVector for...
+            orthoCam.setFront(glm::vec3{ -converter.Direction().x,-converter.Direction().y,-converter.Direction().z });
+            //THIS cause im insane, takes the the position, turns that to NDC and THEN we point AWAY so that it points hopefully to center.
+            orthoCam.setViewMatrix();
+
+            orthoCam.perfromSpecifics(&sphereShader);
+
+
+            break;
+        case 1:
+
+            persCam.setCameraPos(moveCam);
+
+
+
+
+
+            converter = P6::MyVector{ persCam.getCameraPos().x,persCam.getCameraPos().y ,persCam.getCameraPos().z };//this makes a myVector for...
+            persCam.setFront(glm::vec3{ -converter.Direction().x,-converter.Direction().y,-converter.Direction().z });
+            //THIS cause im insane, takes the the position, turns that to NDC and THEN we point AWAY so that it points hopefully to center.
+            persCam.setViewMatrix();
+
+            persCam.perfromSpecifics(&sphereShader);
+            break;
+        }
         
-        sphereShader.setMat4("projection", projection);
+       
         
         for (std::list<RenderParticle*>::iterator i = RenderParticles.begin(); i != RenderParticles.end(); i++) {
             (*i)->Draw();
@@ -511,9 +639,13 @@ int main(void)
 
         /* Poll for and process events */
         glfwPollEvents();
+<<<<<<< Updated upstream
         if (p1.finished && p2.finished && p3.finished&& p4.finished) {
             glfwSetWindowShouldClose(window, 1);
         }
+=======
+        
+>>>>>>> Stashed changes
     }
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);

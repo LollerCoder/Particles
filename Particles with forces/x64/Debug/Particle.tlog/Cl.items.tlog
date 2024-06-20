@@ -1,7 +1,15 @@
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\glad.c;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\glad.obj
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\Main.cpp;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\Main.obj
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\Model3D.cpp;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\Model3D.obj
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\P6\PhysicsWorld.cpp;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\PhysicsWorld.obj
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\P6\Vector.cpp;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\Vector.obj
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\P6\Particle.cpp;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\Particle.obj
-C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\Shader.cpp;C:\Users\Darien\Desktop\Code\GDPHYS\Test Doing Sir\x64\Debug\Shader.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\Camera\Camera.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\Camera.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\Camera\OrthoCamera.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\OrthoCamera.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\Camera\PerspectiveCamera.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\PerspectiveCamera.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\DragForceGenerator.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\DragForceGenerator.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\glad.c;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\glad.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\GravityForceGenerator.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\GravityForceGenerator.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\Main.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\Main.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\Model3D.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\Model3D.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\ForceGenerator.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\ForceGenerator.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\ForceRegistry.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\ForceRegistry.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\PhysicsWorld.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\PhysicsWorld.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\RenderParticle.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\RenderParticle.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\Vector.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\Vector.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\P6\Particle.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\Particle.obj
+C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\Shader.cpp;C:\Users\Darien\Desktop\Github Repo's\Particles\Particles with forces\x64\Debug\Shader.obj

@@ -140,6 +140,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Camera\OrthoCamera.cpp" />
+    <ClCompile Include="Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="P6\DragForceGenerator.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="P6\GravityForceGenerator.cpp" />
@@ -154,6 +157,9 @@
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Camera\OrthoCamera.h" />
+    <ClInclude Include="Camera\PerspectiveCamera.h" />
     <ClInclude Include="P6\DragForceGenerator.h" />
     <ClInclude Include="P6\GravityForceGenerator.h" />
     <ClInclude Include="Model3D.h" />
