@@ -32,6 +32,7 @@ public:
 	
 	void setPos(float x, float y, float z);
 	void setColor(float x, float y, float z);
+	void setScale(float x, float y, float z);
 	
 	void draw(Shader* shaderProg, GLuint* VAO, std::vector<GLfloat>* fullVertexData);
 	

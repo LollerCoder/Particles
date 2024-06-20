@@ -25,6 +25,11 @@ void Model3D::setColor(float x, float y, float z) {
     this->color = glm::vec3(x, y, z);
 }
 
+void Model3D::setScale(float x, float y, float z)
+{
+    this->scale = glm::vec3(x, y, z);
+}
+
 
 
 

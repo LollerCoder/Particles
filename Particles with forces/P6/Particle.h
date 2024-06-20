@@ -10,7 +10,7 @@ namespace P6 {
 	
 		
 	public://race
-		std::string name;
+		std::string name = "Particle";
 		bool finished = false;
 		float placement = 0.0f;
 		float magVel = 0.0f;

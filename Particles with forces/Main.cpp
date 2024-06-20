@@ -35,8 +35,8 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 #include "P6/ForceGenerator.h"
 #include "P6/DragForceGenerator.h"
 
-float width = 700;
-float height = 700;
+float width = 800;
+float height = 800;
 
 float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
 
@@ -137,7 +137,13 @@ void processInput(GLFWwindow* window)
 }
 
 
+int GetRandomInt(int start, int end) {
+    return (rand() % end) + start;
+}
 
+float GetRandomFloat(float start, float end) {
+    return start + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (end - start)));
+}
 
 int main(void)
 {
@@ -294,53 +300,59 @@ int main(void)
     RenderParticle rp1 = RenderParticle(&p1, &circ, color, &sphereShader, &VAO, &fullVertexData);
     RenderParticles.push_back(&rp1);
 
-    //green
-    P6::P6Particle p2 = P6::P6Particle(1.0f,
-        P6::MyVector(width/2, height / 2, 173.0f),
-        P6::MyVector(0,0 ,0 ),
-        P6::MyVector(0.f, 0.f, 0.f));
-    dir = p2.Position.Direction();
-    p2.Velocity = dir.ScalarMult(-90);
-    p2.Acceleration = dir.ScalarMult(-8);
-    p2.initVel = p2.Velocity;
-    p2.name = "Green";
+    int particleAmount = 0;
 
-    color = P6::MyVector(0.0, 1.0, 0.0);
-    pWorld.AddParticle(&p2);
-    RenderParticle rp2 = RenderParticle(&p2, &circ2, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles.push_back(&rp2);
-   
+    std::cout << "How many particles? ";
+    std::cin >> particleAmount;
 
+    srand((unsigned)time(0));
+    float randomXForce = 0, randomYForce = 0, randomZForce = 0, randomSize = 0;
 
-    //blue
-    P6::P6Particle p3 = P6::P6Particle(1.0f,
-        P6::MyVector(width/2, -height / 2, -300.f),
-        P6::MyVector(0, 0, 0),
-        P6::MyVector(0.f, 50.f, 0.f));
-    dir = p3.Position.Direction();
-    p3.Velocity = dir.ScalarMult(-130);
-    p3.Acceleration = dir.ScalarMult(-1);
-    p3.initVel = p3.Velocity;
-    p3.name = "Blue";
-    color = P6::MyVector(0.0, 0.0, 1.0);
-    pWorld.AddParticle(&p3);
-    RenderParticle rp3 = RenderParticle(&p3, &circ3, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles.push_back(&rp3);
+    for (int i = 0; i < particleAmount; i++)
+    {
+        //std::cout << std::endl << "creating particle...";
 
-    //yellow
-    P6::P6Particle p4 = P6::P6Particle(1.0f,
-        P6::MyVector(-width/2, -height / 2, -150.f),
-        P6::MyVector(0, 0, 0),
-        P6::MyVector(0.f, 50.f, 0.f));
-    dir = p4.Position.Direction();
-    p4.Velocity = dir.ScalarMult(-110);
-    p4.Acceleration = dir.ScalarMult(-3);
-    p4.initVel = p4.Velocity;
-    p4.name = "Yellow";
-    color = P6::MyVector(1.0, 1.0, 0.0);
-    pWorld.AddParticle(&p4);
-    RenderParticle rp4 = RenderParticle(&p4, &circ4, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles.push_back(&rp4);
+        //CREATING PARTICLE
+        Model3D* newParticleModel = new Model3D({0,0,0});
+        P6::P6Particle* newParticle = new P6::P6Particle(
+            1.0f,
+            P6::MyVector(0, -height/2.0f, 0),
+            P6::MyVector(0, 0, 0),
+            P6::MyVector(0.f, 0.f, 0.f)
+            );
+
+        //FORCE
+        randomXForce = GetRandomInt(0, 6000);
+        if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
+
+        randomZForce = GetRandomInt(0, 6000);
+        if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
+
+        randomYForce = GetRandomInt(1000, 6000);
+        //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
+
+        //std::cout << "Xforce: " << randomXForce << std::endl;
+        //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
+
+        newParticle->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
+
+        //CHANGING COLOR
+        color = P6::MyVector(
+            GetRandomFloat(0.0f,1.0f), //r
+            GetRandomFloat(0.0f,1.0f), //g
+            GetRandomFloat(0.0f,1.0f) //b
+        );
+
+        //CHANGING SIZE
+        randomSize = GetRandomFloat(2.0f,10.0f);
+        //std::cout << "Rand size: " << randomSize << std::endl;
+        newParticleModel->setScale(randomSize, randomSize, randomSize);
+
+        //ADDING IT TO THE LISTS
+        pWorld.AddParticle(newParticle);
+        RenderParticle* newRP = new RenderParticle(newParticle, newParticleModel, color, &sphereShader, &VAO, &fullVertexData);
+        RenderParticles.push_back(newRP);
+    }
 
 
     //drag
@@ -380,18 +392,6 @@ int main(void)
                 p1.Destroy();
                 race(&p1,ms_tracker);
                 
-            }
-            if (AtCenter(p2) && !p2.finished) {
-                p2.Destroy();
-                race(&p2,ms_tracker);
-            }
-            if (AtCenter(p3) && !p3.finished) {
-                p3.Destroy();
-                race(&p3,ms_tracker);
-            }
-            if (AtCenter(p4) && !p4.finished) {
-                p4.Destroy();
-                race(&p4, ms_tracker);
             }
             //updates here
             pWorld.Update((float)ms.count() / 1000);
@@ -442,13 +442,6 @@ int main(void)
             (*i)->Draw();
         }
         
-
-       
-
-   
-
-
-        
        
         
 
@@ -457,7 +450,7 @@ int main(void)
 
         /* Poll for and process events */
         glfwPollEvents();
-        if (p1.finished && p2.finished && p3.finished&& p4.finished) {
+        if (p1.finished) {
             glfwSetWindowShouldClose(window, 1);
         }
     }
