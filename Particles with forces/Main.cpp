@@ -151,7 +151,7 @@ int main(void)
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(width, height , "PC01 JAIRO RIO M. JAROPOJOP", NULL, NULL);
+    window = glfwCreateWindow(width, height , "JAROCO Engine", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -171,37 +171,6 @@ int main(void)
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    
-    
-
-
-
-
-    //float vertices[] = {
-    //    // positions          // colors           // texture coords
-    //    0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-    //    0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    //   -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    //   -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-    //};
-    //unsigned int indices[] = {  // note that we start from 0!
-    //    0, 1, 3,   // first triangle
-    //    1, 2, 3    // second triangle
-    //};
-    /*EBO which order to draw indices
-    * consists  generate,bindbuffer and buffer data
-    * 
-    * generate makes, bindbuffer sets what is currenting being edited
-    * bufferdata copies our necessary data onto said buffer.\
-    * 
-    VBO, what the data is 
-    consists of bind buffer and bufferdata
-    VAO how the shaders see the data
-    consists of glVertexAttribPointer 
-    * how the shaders is supposed to know which object is one thing and which is another
-    and glenablevertexattribpointer
-    * how shader knows its active and to be used;
-    */
     //=================models================//
 
     std::string path = "3D/sphere.obj";
@@ -261,21 +230,6 @@ int main(void)
       
     }
 
-    /*std::string path2 = "3D/myCube.obj";
-    std::vector<tinyobj::shape_t> shapes2;
-    std::vector<tinyobj::material_t> material2;
-    std::string warning2, error2;
-
-    tinyobj::attrib_t attributes2;
-
-    bool success = tinyobj::LoadObj(
-        &attributes2,
-        &shapes2,
-        &material2,
-        &warning2,
-        &error2,
-        path2.c_str()
-    );*/
     //=================VBO/VAO==========//
 
     unsigned int VBO, VAO;
@@ -303,14 +257,6 @@ int main(void)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)UVptr);
     glEnableVertexAttribArray(2);
 
-    
-
-
-   
-    
-    
-
-    
 
     
     //Camera inits
