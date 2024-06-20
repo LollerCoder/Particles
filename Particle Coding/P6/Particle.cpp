@@ -16,7 +16,9 @@ P6::P6Particle::P6Particle(float m, MyVector pos, MyVector vel, MyVector accel)
 }
 
 void P6Particle::UpdateVelocity(float time) {
+	this->Acceleration += accumulatedForce * (1 / this->mass);
 	this->Velocity += this->Acceleration * time;
+	this->Velocity = this->Velocity * powf(damping, time);
 	
 }
 
@@ -27,4 +29,17 @@ void P6Particle::UpdatePosition(float time) {
 void P6Particle::Update(float time) {
 	this->UpdatePosition(time);
 	this->UpdateVelocity(time);
+
+	this->ResetForce();
+}
+
+void P6::P6Particle::AddForce(MyVector force)
+{
+	this->accumulatedForce += force;
+}
+
+void P6::P6Particle::ResetForce()
+{
+	this->accumulatedForce = MyVector(0.0f, 0.0f, 0.0f);
+	this->Acceleration = MyVector(0.0f, 0.0f, 0.0f);
 }

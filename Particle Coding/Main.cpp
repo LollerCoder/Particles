@@ -321,16 +321,11 @@ int main(void)
     rgb_values.push_back(glm::vec3(1.0f, 1.0f, 0.0f)); //yellow
     
     //physics world
-    /*P6::PhysicsWorld physicsWorld;
-    for (int i = 0; i < 4; i++)
+    P6::PhysicsWorld physicsWorld;
+    for (P6::P6Particle* particle : particles)
     {
-        P6::P6Particle* particle = new P6::P6Particle(
-            1.0f,
-            P6::MyVector(-100.0f + 50.0f*i, height / -2 + 1, 0.f),
-            P6::MyVector(x, y, z),
-            P6::MyVector(0.f, -50.f, 0.f)
-        );
-    }*/
+        physicsWorld.AddParticle(particle);
+    }
 
     //Getting Shader
     std::vector<Renderer::Shader> particleShaders;
@@ -365,8 +360,9 @@ int main(void)
     vecRacers[2].name = "Blue";
     vecRacers[3].name = "Yellow";
 
-    //1 m = 1 unit
-    //1m = 1 px
+    //adding force
+    particles[0]->AddForce(P6::MyVector(1000.0f, -1000.0f, 0.0f));
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -384,10 +380,11 @@ int main(void)
             curr_ns -= curr_ns;
 
             //updates here
-            for (P6::P6Particle* par : particles)
+            /*for (P6::P6Particle* par : particles)
             {
                 par->Update((float)ms.count() / 1000);
-            }
+            }*/
+            physicsWorld.Update((float)ms.count() / 1000);
 
             //check if red finished
             if (particles[0]->Position.x >= 0 && particles[0]->Position.y <= 0
