@@ -51,6 +51,9 @@ Model3D circ4({ 0,0,0 });
 float rank = 1;
 float gone = 0;
 
+//Fireworks
+bool isPaused = false;
+
 std::vector <P6::P6Particle*> res;
 
 void result() {
@@ -130,9 +133,10 @@ void processInput(GLFWwindow* window)
         zRot += 0.05;
     }
 
-        
-    
-    
+    if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+        if (isPaused) isPaused = false;
+        else isPaused = true;
+    }
         
 }
 
@@ -300,7 +304,10 @@ int main(void)
     RenderParticle rp1 = RenderParticle(&p1, &circ, color, &sphereShader, &VAO, &fullVertexData);
     RenderParticles.push_back(&rp1);
 
+
+    //FIREWORK PARTICLES
     int particleAmount = 0;
+    int fireworkParticleTracker = 1;
 
     std::cout << "How many particles? ";
     std::cin >> particleAmount;
@@ -309,54 +316,54 @@ int main(void)
     float randomXForce = 0, randomYForce = 0, randomZForce = 0, randomSize = 0;
     int coneRadius = 2500;
 
-    for (int i = 0; i < particleAmount; i++)
-    {
-        //std::cout << std::endl << "creating particle...";
+    //for (int i = 0; i < particleAmount; i++)
+    //{
+    //    //std::cout << std::endl << "creating particle...";
 
-        //CREATING PARTICLE
-        Model3D* newParticleModel = new Model3D({0,0,0});
-        P6::P6Particle* newParticle = new P6::P6Particle(
-            1.0f,
-            P6::MyVector(0, -height/2.0f + 10.0f, 0),
-            P6::MyVector(0, 0, 0),
-            P6::MyVector(0.f, 0.f, 0.f)
-            );
+    //    //CREATING PARTICLE
+    //    Model3D* newParticleModel = new Model3D({0,0,0});
+    //    P6::P6Particle* newParticle = new P6::P6Particle(
+    //        1.0f,
+    //        P6::MyVector(0, -height/2.0f + 10.0f, 0),
+    //        P6::MyVector(0, 0, 0),
+    //        P6::MyVector(0.f, 0.f, 0.f)
+    //        );
 
-        //FORCE
-        randomXForce = GetRandomInt(0, coneRadius);
-        if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
+    //    //FORCE
+    //    randomXForce = GetRandomInt(0, coneRadius);
+    //    if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
 
-        randomZForce = GetRandomInt(0, coneRadius);
-        if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
+    //    randomZForce = GetRandomInt(0, coneRadius);
+    //    if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
 
-        randomYForce = GetRandomInt(1000, 6000);
-        //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
+    //    randomYForce = GetRandomInt(1000, 6000);
+    //    //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
 
-        //std::cout << "Xforce: " << randomXForce << std::endl;
-        //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
+    //    //std::cout << "Xforce: " << randomXForce << std::endl;
+    //    //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
 
-        newParticle->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
+    //    newParticle->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
 
-        //CHANGING COLOR
-        color = P6::MyVector(
-            GetRandomFloat(0.0f,1.0f), //r
-            GetRandomFloat(0.0f,1.0f), //g
-            GetRandomFloat(0.0f,1.0f) //b
-        );
+    //    //CHANGING COLOR
+    //    color = P6::MyVector(
+    //        GetRandomFloat(0.0f,1.0f), //r
+    //        GetRandomFloat(0.0f,1.0f), //g
+    //        GetRandomFloat(0.0f,1.0f) //b
+    //    );
 
-        //CHANGING SIZE
-        randomSize = GetRandomFloat(2.0f,10.0f);
-        //std::cout << "Rand size: " << randomSize << std::endl;
-        newParticleModel->setScale(randomSize, randomSize, randomSize);
+    //    //CHANGING SIZE
+    //    randomSize = GetRandomFloat(2.0f,10.0f);
+    //    //std::cout << "Rand size: " << randomSize << std::endl;
+    //    newParticleModel->setScale(randomSize, randomSize, randomSize);
 
-        //GIVING LIFE
-        newParticle->lifeSpan = GetRandomFloat(1.0f, 10.f);
+    //    //GIVING LIFE
+    //    newParticle->lifeSpan = GetRandomFloat(1.0f, 10.f);
 
-        //ADDING IT TO THE LISTS
-        pWorld.AddParticle(newParticle);
-        RenderParticle* newRP = new RenderParticle(newParticle, newParticleModel, color, &sphereShader, &VAO, &fullVertexData);
-        RenderParticles.push_back(newRP);
-    }
+    //    //ADDING IT TO THE LISTS
+    //    pWorld.AddParticle(newParticle);
+    //    RenderParticle* newRP = new RenderParticle(newParticle, newParticleModel, color, &sphereShader, &VAO, &fullVertexData);
+    //    RenderParticles.push_back(newRP);
+    //}
 
 
     //drag
@@ -397,8 +404,62 @@ int main(void)
                 race(&p1,ms_tracker);
                 
             }
+
+            //fireworks
+            if (fireworkParticleTracker < 100) {
+                Model3D* newFWPM = new Model3D({ 0,0,0 }); //FWPM short for firework particle model
+                P6::P6Particle* newFWP = new P6::P6Particle(
+                            1.0f,
+                            P6::MyVector(0, -height/2.0f + 10.0f, 0),
+                            P6::MyVector(0, 0, 0),
+                            P6::MyVector(0.f, 0.f, 0.f)
+                    );
+
+                //FORCE
+                randomXForce = GetRandomInt(0, coneRadius);
+                if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
+
+                randomZForce = GetRandomInt(0, coneRadius);
+                if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
+
+                randomYForce = GetRandomInt(1000, 6000);
+                //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
+
+                //std::cout << "Xforce: " << randomXForce << std::endl;
+                //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
+
+                newFWP->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
+
+                //CHANGING COLOR
+                color = P6::MyVector(
+                    GetRandomFloat(0.0f,1.0f), //r
+                    GetRandomFloat(0.0f,1.0f), //g
+                    GetRandomFloat(0.0f,1.0f) //b
+                );
+
+                //CHANGING SIZE
+                randomSize = GetRandomFloat(2.0f,10.0f);
+                //std::cout << "Rand size: " << randomSize << std::endl;
+                newFWPM->setScale(randomSize, randomSize, randomSize);
+
+                //GIVING LIFE
+                newFWP->lifeSpan = GetRandomFloat(1.0f, 10.f);
+
+                //ADDING IT TO THE LISTS
+                pWorld.AddParticle(newFWP);
+                RenderParticle* newRP = new RenderParticle(newFWP, newFWPM, color, &sphereShader, &VAO, &fullVertexData);
+                RenderParticles.push_back(newRP);
+
+                fireworkParticleTracker++;
+            }
+
             //updates here
-            pWorld.Update((float)ms.count() / 1000);
+            if (!isPaused) {
+                pWorld.Update((float)ms.count() / 1000);
+            }
+            else {
+                std::cout << "Current particle count: " << RenderParticles.size() << std::endl;
+            }
             
           
             
