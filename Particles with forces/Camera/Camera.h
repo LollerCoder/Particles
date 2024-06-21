@@ -20,10 +20,11 @@ protected:
 public:
 	Camera(glm::vec3 pos, glm::vec3 WorldUp, glm::vec3 Front, bool Dstate);
 public:
-	void performFundamentals(Shader* shaderProg);
+	void performFundamentals(Shader* shaderProg);//helper function used for telling shader projection and view values
 
 public:
-	void setCameraPos(glm::vec3 camPos);
+	//getters and setters
+	void setCameraPos(glm::vec3 camPos); 
 	void setFront(glm::vec3 Front);
 	glm::vec3 getFront();
 	glm::vec3 getWorldUp();

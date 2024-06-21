@@ -23,13 +23,13 @@ public:
 		this->VAO = VAO;
 		this->fullVertexData = fullVertexData;
 		Color = P6::MyVector(1, 0, 0);
-	}
+	} // creates renderparticle with red color
 
 	RenderParticle(P6::P6Particle* p, Model3D* obj, P6::MyVector c, Shader* ShaderProg, GLuint* VAO, std::vector<GLfloat>* fullVertexData) 
 		: PhysicsParticle(p), RenderObject(obj), Color(c), shaderProg(ShaderProg) {
 		this->VAO = VAO;
 		this->fullVertexData = fullVertexData;
-	};
+	}; // creates renderparticle with SPECIFIED color
 
 	void Draw();
 
