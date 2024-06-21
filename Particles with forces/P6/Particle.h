@@ -9,14 +9,7 @@ namespace P6 {
 	class P6Particle {
 	
 		
-	public://race
-		std::string name = "Particle";
-		bool finished = false;
-		float placement = 0.0f;
-		float magVel = 0.0f;
-		MyVector avgVel = MyVector(0.0f, 0.0f, 0.0f);
-		float time = 0.0f;
-		MyVector initVel = MyVector(0.0f, 0.0f, 0.0f);
+	
 	public://fireworks
 		float lifeSpan = 1.0f;
 	public:

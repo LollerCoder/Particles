@@ -16,9 +16,9 @@ namespace P6 {
 		MyVector(const float _x, const float _y, const float _z);
 		
 	public:
-		MyVector operator* (const float v);
-		MyVector operator+ (const MyVector v);
-		MyVector operator/ (const float v);
+		MyVector operator* (const float v);// multiplies myvector by a constant and returns it
+		MyVector operator+ (const MyVector v);// adds myvector by a constant and returns it
+		MyVector operator/ (const float v);// divides myvector by a constant and returns it
 		
 
 		void operator += (const MyVector v); //3 Addition
@@ -34,7 +34,7 @@ namespace P6 {
 		glm::vec3 VectorProduct(MyVector v); //8 Cross Product
 		
 	public:
-		explicit operator glm::vec3() const { return glm::vec3(x, y, z); }
+		explicit operator glm::vec3() const { return glm::vec3(x, y, z); }//turns myvector into glm::vec3
 		
 	};
 }

@@ -43,17 +43,9 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 float width = 800;
 float height = 800;
 
-float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
 
-
-//CREATING 3DMODELS
-Model3D circ({ 0,0,0 });
-Model3D circ2({ 0,0,0 });
-Model3D circ3({ 0,0,0 });
-Model3D circ4({ 0,0,0 });
-
-//camera
-OrthoCamera orthoCam({ 0,0,0 }, { 0,1,0 }, { 0.1,0.1,1 }, height, width, width, true);
+//camera initialization
+OrthoCamera orthoCam({ 0,0,-400 }, { 0,1,0 }, { 0.1,0.1,1 }, height, width, width, true);
 PerspectiveCamera persCam({ 0,0,-400 }, { 0,1,0 }, { 0,0,1 }, 90.f, height, width, 800, false);//test view
 glm::vec3 moveCam({ 0, 0, 0 });
 
@@ -61,32 +53,31 @@ float pitch = 0.0f;
 float yaw = -90.0f;
 int camState = 0;
 
-//race
-float rank = 1;
-float gone = 0;
 
+//Fireworks
+bool isPaused = false;
 
 std::vector <P6::P6Particle*> res;
 
 glm::vec3 camRotation(bool vertical, bool pos) {
     const float speed = 0.1f;
 
-
+    //checks what button was pressed
     if (vertical) {
         if (pos) {
-            pitch += speed;//y
+            pitch += speed;//y w was pressed
         }
         else {
-            pitch -= speed;//y
+            pitch -= speed;//y s was pressed
         }
 
     }
     else {
         if (pos) {
-            yaw += speed; //x
+            yaw += speed; //x d was pressed
         }
         else {
-            yaw -= speed; //x
+            yaw -= speed; //x a was pressed
         }
 
     }
@@ -99,61 +90,21 @@ glm::vec3 camRotation(bool vertical, bool pos) {
     if (pitch < -89.0f)
         pitch = -89.0f;
 
-    //setting front and the change
+    //setting camera pos, the number multiplied is the radius
 
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
-    direction.y = sin(glm::radians(pitch)) * 400;
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
-    return  direction;
-    //cameraPos = (direction);
-    //std::cout << direction.x << "" << direction.y << "" << direction.z << std::endl;
+    glm::vec3 camPos;
+    camPos.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
+    camPos.y = sin(glm::radians(pitch)) * 400;
+    camPos.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
+    return  camPos;
 
-    //Front = glm::vec3(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-}
-
-void result() {
-    int num = 1;
-    std::string buff;
-    for (int x = 0  ; x < res.size(); x++) {
-        std::cout << res[x]->name << " Placement was " << res[x]->placement << std::endl;
-        std::cout << "Magnitude of Velocity: " << res[x]->magVel << std::endl;
-        std::cout << "Average Velocity: (" << res[x]->avgVel.x << "," << res[x]->avgVel.y << "," << res[x]->avgVel.z << ")m/s" << std::endl;
-        std::cout << "Time Taken: " << res[x]->time << "secs" << std::endl << std::endl;
-    }
-    std::cout << "Enter any key to get out : ";
-    std::cin >> buff;
-   
 }
 
 
-bool AtCenter(P6::P6Particle obj) {
-    if (obj.Position.x <=1.5 && obj.Position.x >= -1.5) {
-        if (obj.Position.y <= 1.5 && obj.Position.y >= -1.5) {
-            if (obj.Position.z <= 1.5 && obj.Position.z >= -1.5) {
-                return true;
-            }
-            
-        }
-       
-    }
-    return false;
-    
-}
-float  toHundreths(float num) {
-    int conv = num * 100 + 0.5;//
-    return (float)conv / 100.00f;
-}
 
-void race(P6::P6Particle* obj,float time) {
-    obj->placement = rank;
-    obj->time = toHundreths(time/1000);
-    obj->magVel = toHundreths( obj->Velocity.Magnitude());
-    obj->avgVel = P6::MyVector(toHundreths((obj->Velocity.x + obj->initVel.x)/2), toHundreths((obj->Velocity.y + obj->initVel.y) / 2), toHundreths((obj->Velocity.z + obj->initVel.z) / 2));
-    rank++;
-    obj->finished = true;
-    res.push_back(obj);
-}
+
+
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -176,51 +127,29 @@ void processInput(GLFWwindow* window)
             camState = 1;
         }
     }
-    //yrot
+
+
+
+
     if (glfwGetKey(window, GLFW_KEY_A)) {
         moveCam = camRotation(false, false);
-        if (camState == 0) {
-            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
-        }
-        if (camState == 1) {
-            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
-        }
     }
     if (glfwGetKey(window, GLFW_KEY_D)) {
         moveCam = camRotation(false, true);
-        if (camState == 0) {
-            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
-        }
-        if (camState == 1) {
-            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
-        }
     }
-
-    //xRot
     if (glfwGetKey(window, GLFW_KEY_S)) {
-
         moveCam = camRotation(true, false);
-        if (camState == 0) {
-            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
-        }
-        if (camState == 1) {
-            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
-        }
-
-
     }
     if (glfwGetKey(window, GLFW_KEY_W)) {
-
         moveCam = camRotation(true, true);
-        if (camState == 0) {
-            std::cout << "Orth: " << orthoCam.getCameraPos().x << "," << orthoCam.getCameraPos().y << "," << orthoCam.getCameraPos().z << std::endl;
-        }
-        if (camState == 1) {
-            std::cout << "Perc: " << persCam.getCameraPos().x << "," << persCam.getCameraPos().y << "," << persCam.getCameraPos().z << std::endl;
-        }
-
     }
 
+
+    //checks pausing
+    if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+        if (isPaused) isPaused = false;
+        else isPaused = true;
+    }
 
 
 
@@ -357,10 +286,7 @@ int main(void)
 
 
     
-    //Camera inits
-    glm::mat4 iden_Mat = glm::mat4(1.0f);
-   
-    glm::mat4 projection = glm::ortho(-width/2, width/2, -height/2, height/2, -400.f, 400.f);
+    
     
 
     //Render Particles
@@ -372,27 +298,15 @@ int main(void)
     
 
 
-    //Particle initialize
-    //red
-    P6::P6Particle p1 = P6::P6Particle(1.0f, 
-        P6::MyVector(-width/2,0, 201.f),
-        P6::MyVector(0,0,0 ), 
-        P6::MyVector(0.f, 0.f, 0.f));
-    P6::MyVector dir = p1.Position.Direction();
-    p1.Velocity = dir.ScalarMult(-80);
-    p1.Acceleration = dir.ScalarMult(-14.5);
-    p1.initVel = p1.Velocity;
-    p1.name = "Red";
+    
 
-    p1.AddForce(P6::MyVector(6000, 0, 0));
+   
+   
 
+    //FIREWORK PARTICLES
     P6::MyVector color = P6::MyVector(1.0, 0.0, 0.0);
-
-    pWorld.AddParticle(&p1);
-    RenderParticle rp1 = RenderParticle(&p1, &circ, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles.push_back(&rp1);
-
     int particleAmount = 0;
+    int fireworkParticleTracker = 1;
 
     std::cout << "How many particles? ";
     std::cin >> particleAmount;
@@ -401,54 +315,7 @@ int main(void)
     float randomXForce = 0, randomYForce = 0, randomZForce = 0, randomSize = 0;
     int coneRadius = 2500;
 
-    for (int i = 0; i < particleAmount; i++)
-    {
-        //std::cout << std::endl << "creating particle...";
-
-        //CREATING PARTICLE
-        Model3D* newParticleModel = new Model3D({0,0,0});
-        P6::P6Particle* newParticle = new P6::P6Particle(
-            1.0f,
-            P6::MyVector(0, -height/2.0f + 10.0f, 0),
-            P6::MyVector(0, 0, 0),
-            P6::MyVector(0.f, 0.f, 0.f)
-            );
-
-        //FORCE
-        randomXForce = GetRandomInt(0, coneRadius);
-        if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
-
-        randomZForce = GetRandomInt(0, coneRadius);
-        if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
-
-        randomYForce = GetRandomInt(1000, 6000);
-        //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
-
-        //std::cout << "Xforce: " << randomXForce << std::endl;
-        //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
-
-        newParticle->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
-
-        //CHANGING COLOR
-        color = P6::MyVector(
-            GetRandomFloat(0.0f,1.0f), //r
-            GetRandomFloat(0.0f,1.0f), //g
-            GetRandomFloat(0.0f,1.0f) //b
-        );
-
-        //CHANGING SIZE
-        randomSize = GetRandomFloat(2.0f,10.0f);
-        //std::cout << "Rand size: " << randomSize << std::endl;
-        newParticleModel->setScale(randomSize, randomSize, randomSize);
-
-        //GIVING LIFE
-        newParticle->lifeSpan = GetRandomFloat(1.0f, 10.f);
-
-        //ADDING IT TO THE LISTS
-        pWorld.AddParticle(newParticle);
-        RenderParticle* newRP = new RenderParticle(newParticle, newParticleModel, color, &sphereShader, &VAO, &fullVertexData);
-        RenderParticles.push_back(newRP);
-    }
+    
 
 
     //drag
@@ -466,6 +333,9 @@ int main(void)
     std::chrono::nanoseconds ns_tracker(0);
     int buffer;
    
+
+    
+
     //1 m = 1 unit
     //1m = 1 px
     /* Loop until the user closes the window */
@@ -485,13 +355,63 @@ int main(void)
 
             curr_ns -= curr_ns;
 
-            if (AtCenter(p1) && !p1.finished) {
-                p1.Destroy();
-                race(&p1,ms_tracker);
-                
-            }
+            
+            //fireworks
+            
+
             //updates here
-            pWorld.Update((float)ms.count() / 1000);
+            if (!isPaused) {
+                if (fireworkParticleTracker < particleAmount) {
+                    Model3D* newFWPM = new Model3D({ 0,0,0 }); //FWPM short for firework particle model
+                    P6::P6Particle* newFWP = new P6::P6Particle(
+                        1.0f,
+                        P6::MyVector(0, -height / 2.0f + 10.0f, 0),
+                        P6::MyVector(0, 0, 0),
+                        P6::MyVector(0.f, 0.f, 0.f)
+                    );
+
+                    //FORCE
+                    randomXForce = GetRandomInt(0, coneRadius);
+                    if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
+
+                    randomZForce = GetRandomInt(0, coneRadius);
+                    if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
+
+                    randomYForce = GetRandomInt(1000, 6000);
+                    //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
+
+                    //std::cout << "Xforce: " << randomXForce << std::endl;
+                    //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
+
+                    newFWP->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
+
+                    //CHANGING COLOR
+                    color = P6::MyVector(
+                        GetRandomFloat(0.0f, 1.0f), //r
+                        GetRandomFloat(0.0f, 1.0f), //g
+                        GetRandomFloat(0.0f, 1.0f) //b
+                    );
+
+                    //CHANGING SIZE
+                    randomSize = GetRandomFloat(2.0f, 10.0f);
+                    //std::cout << "Rand size: " << randomSize << std::endl;
+                    newFWPM->setScale(randomSize, randomSize, randomSize);
+
+                    //GIVING LIFE
+                    newFWP->lifeSpan = GetRandomFloat(1.0f, 10.f);
+
+                    //ADDING IT TO THE LISTS
+                    pWorld.AddParticle(newFWP);
+                    RenderParticle* newRP = new RenderParticle(newFWP, newFWPM, color, &sphereShader, &VAO, &fullVertexData);
+                    RenderParticles.push_back(newRP);
+
+                    fireworkParticleTracker++;
+                }
+                pWorld.Update((float)ms.count() / 1000);
+            }
+            else {
+                std::cout << "Current particle count: " << RenderParticles.size() << std::endl;
+            }
             
           
             
@@ -504,44 +424,37 @@ int main(void)
 
         /* Render here */
         
-         //cameras
-
-
+        
+        //cameras
         P6::MyVector converter{ 0,0,0 };
 
         switch (camState) {
         case 0:
-
-            orthoCam.setCameraPos(moveCam);
-
-
-
-
-
+            if (moveCam != glm::vec3{0, 0, 0}) {//this is for on camCreation making sure it doesnt set it to 0,0,0 on start
+                orthoCam.setCameraPos(moveCam);//set camera pos
+            }
+            
 
             converter = P6::MyVector{ orthoCam.getCameraPos().x,orthoCam.getCameraPos().y ,orthoCam.getCameraPos().z };//this makes a myVector for...
             orthoCam.setFront(glm::vec3{ -converter.Direction().x,-converter.Direction().y,-converter.Direction().z });
             //THIS cause im insane, takes the the position, turns that to NDC and THEN we point AWAY so that it points hopefully to center.
             orthoCam.setViewMatrix();
 
-            orthoCam.perfromSpecifics(&sphereShader);
+            orthoCam.perfromSpecifics(&sphereShader);//put the data into shader
 
 
             break;
         case 1:
-
-            persCam.setCameraPos(moveCam);
-
-
-
-
-
+            if (moveCam != glm::vec3{ 0, 0, 0 }) {//this is for on camCreation making sure it doesnt set it to 0,0,0 on start
+                persCam.setCameraPos(moveCam);//set camera pos
+            }
+            
             converter = P6::MyVector{ persCam.getCameraPos().x,persCam.getCameraPos().y ,persCam.getCameraPos().z };//this makes a myVector for...
             persCam.setFront(glm::vec3{ -converter.Direction().x,-converter.Direction().y,-converter.Direction().z });
             //THIS cause im insane, takes the the position, turns that to NDC and THEN we point AWAY so that it points hopefully to center.
             persCam.setViewMatrix();
 
-            persCam.perfromSpecifics(&sphereShader);
+            persCam.perfromSpecifics(&sphereShader);//put the data into shader
             break;
         }
         
@@ -557,16 +470,14 @@ int main(void)
 
         /* Poll for and process events */
         glfwPollEvents();
-        if (p1.finished) {
-            glfwSetWindowShouldClose(window, 1);
-        }
+        
     }
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 
     
 
-    result();
+   
 
     
     
