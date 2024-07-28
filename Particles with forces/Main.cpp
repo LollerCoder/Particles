@@ -321,21 +321,22 @@ int main(void)
     std::cout << "Z: ";
     std::cin >> applyForce.z;
 
-    float p1Pos = -2 * particleGap;
+    float p1Pos = -2 * particleGap; //position of leftmost particle based on the gap
 
-    GravityForceGenerator Gravity = GravityForceGenerator(MyVector(0, gravityStrength, 0));
+    GravityForceGenerator Gravity = GravityForceGenerator(MyVector(0, gravityStrength, 0)); //making gravity force generator
 
-    //PARTICLES
+    //PARTICLE creation
     for (int i = 0; i < 5; i++)
     {
         P6::P6Particle* p = new P6::P6Particle(
             50.0f,
-            P6::MyVector(p1Pos + (i*particleGap), 60, 0),
+            P6::MyVector(p1Pos + (i*particleGap), 60, 0), //position based on the gap
             P6::MyVector(0, 0, 0),
             P6::MyVector(0.f, 0.f, 0.f)
         );
-
         particles.push_back(p);
+
+        //scaling based on radius
         p->radius = particleRadius;
         float sc = p->radius;
         P6::MyVector particleScale = { sc,sc,sc };
@@ -344,7 +345,7 @@ int main(void)
         Model3D* particleModel = new Model3D({ 0,0,0 });
         particleModel->setScale(particleScale.x, particleScale.y, particleScale.z);
 
-        p->lifeSpan = 100.f;
+        p->lifeSpan = 10000.f;
         pWorld->AddParticle(p);
         P6::RenderParticle* newRP = new P6::RenderParticle(p, particleModel, color, &sphereShader, &VAO, &fullVertexData);
         RenderParticles->push_back(newRP);
@@ -352,10 +353,12 @@ int main(void)
         pWorld->forceRegistry.Add(p, &Gravity);
     }
 
-    //CABLES
+    //CABLE creation
     for (int i = 0; i < particles.size(); i++)
     {
-        P6::Cable* cableLink = new P6::Cable(P6::MyVector(p1Pos + (i * particleGap), 0, 0), cableLength);
+        P6::Cable* cableLink = new P6::Cable(P6::MyVector(
+            p1Pos + (i * particleGap), 0, 0), 
+            cableLength); //cable length basd on the inputted
         pWorld->forceRegistry.Add(particles[i], cableLink);
     }
 
@@ -412,6 +415,8 @@ int main(void)
                 //fireworkHandler.Perform(RenderParticles, pWorld);
                 pWorld->Update((float)ms.count() / 1000);
                 //std::cout << "Particle at " << particle2->Position.x << " , " << particle2->Position.y << std::endl;
+                
+                //updating the render lines
                 for (int i = 0; i < renderLines.size(); i++)
                 {
                     renderLines[i]->Update(
