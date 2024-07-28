@@ -491,15 +491,16 @@ int main(void)
             break;
         }
 
+        //Line render
+        for (int i = 0; i < renderLines.size(); i++)
+        {
+            renderLines[i]->Draw(&sphereShader);
+        }
+
         for (std::list<P6::RenderParticle*>::iterator i = RenderParticles->begin(); i != RenderParticles->end(); i++) {
             (*i)->Draw();
         }
 
-        //Line render
-        for (int i = 0; i < renderLines.size(); i++)
-        {
-            renderLines[i]->Draw();
-        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

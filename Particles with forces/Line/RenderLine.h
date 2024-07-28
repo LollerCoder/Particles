@@ -2,6 +2,8 @@
 
 #include "../P6/Vector.h"
 
+#include "../Renderer/Shader.h"
+
 #include <glad/glad.h> // include glad to get all the required OpenGL headers
 #include <glm/glm.hpp>
 
@@ -22,5 +24,5 @@ public:
 		P1(p1), P2(p2), projectionMatrix(projectionMat), ID(glCreateProgram()) {}
 
 	void Update(MyVector p1, MyVector p2, glm::mat4 projectionMatrix);
-	void Draw();
+	void Draw(Shader* shader);
 };

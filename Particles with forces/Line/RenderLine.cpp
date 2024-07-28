@@ -7,15 +7,18 @@ void RenderLine::Update(MyVector p1, MyVector p2, glm::mat4 projectionMatrix)
 	this->projectionMatrix = projectionMatrix;
 }
 
-void RenderLine::Draw()
+void RenderLine::Draw(Shader* shader)
 {
-	glUseProgram(this->ID);
+	//glUseProgram(shader->getID());
+	shader->use();
 
-	glm::vec4 d1 = this->projectionMatrix * glm::vec4(
+	shader->setMat4("transform", glm::mat4(1.0f));
+
+	glm::vec4 d1 = glm::vec4(
 		P1.x, P1.y, P1.z, 1.0f
 	);
 
-	glm::vec4 d2 = this->projectionMatrix * glm::vec4(
+	glm::vec4 d2 = glm::vec4(
 		P2.x, P2.y, P2.z, 1.0f
 	);
 
