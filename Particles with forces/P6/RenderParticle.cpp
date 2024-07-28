@@ -1,5 +1,7 @@
 #include "RenderParticle.h"
 
+using namespace P6;
+
 void RenderParticle::Draw() {
 	if (!PhysicsParticle->IsDestroyed()) {
 		//set color

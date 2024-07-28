@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.h"
-#include "../Shader.h"
+#include "../Renderer/Shader.h"
 
 class OrthoCamera : public Camera {
 private:

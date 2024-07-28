@@ -18,9 +18,12 @@ namespace P6 {
 		MyVector Velocity;
 		MyVector Acceleration;
 		
-		
 		//damping 
 		float damping = 0.9f;
+
+		float radius = 1.0f;
+		float restitution = 1.0f; //how bouncy the particle is
+
 	public:
 		P6Particle();
 		P6Particle(float m, MyVector pos, MyVector vel, MyVector accel);

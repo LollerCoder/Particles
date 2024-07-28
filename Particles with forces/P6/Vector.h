@@ -18,6 +18,7 @@ namespace P6 {
 	public:
 		MyVector operator* (const float v);// multiplies myvector by a constant and returns it
 		MyVector operator+ (const MyVector v);// adds myvector by a constant and returns it
+		MyVector operator- (const MyVector v);// subtracts myvector by a constant and returns it
 		MyVector operator/ (const float v);// divides myvector by a constant and returns it
 		
 
@@ -28,6 +29,7 @@ namespace P6 {
 	public:
 		
 		float Magnitude();//1 Magnitude
+		float SquareMagnitude();//1 Magnitude
 		MyVector Direction();//2 Direction
 		MyVector ScalarMult(float i);//5 ScalarMult
 		float DotProduct(MyVector v);//7 Scalar Product

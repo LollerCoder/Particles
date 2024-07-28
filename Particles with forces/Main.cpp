@@ -24,8 +24,8 @@
 using namespace std::chrono_literals;
 constexpr std::chrono::nanoseconds timestep(30ms);
 
-#include "Shader.h"
-#include "Model3D.h"
+#include "Renderer/Shader.h"
+#include "Renderer/Model3D.h"
 
 #include "P6/Vector.h"
 #include "P6/Particle.h"
@@ -34,19 +34,38 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 #include "P6/ForceRegistry.h"
 #include "P6/ForceGenerator.h"
 #include "P6/DragForceGenerator.h"
+#include "P6/ParticleContact.h"
+#include "P6/ContactResolver.h"
+
+#include "P6/Springs/AnchoredSpring.h"
+#include "P6/Springs/ParticleSpring.h"
+
+#include "P6/Links/ParticleLink.h"
+#include "P6/Links/Rod.h"
+
+#include "Line/RenderLine.h"
 
 //Camera
 #include "Camera/Camera.h"
 #include "Camera/OrthoCamera.h"
 #include "Camera/PerspectiveCamera.h"
 
+//activites
+#include "Activities/FireworkHandler.h"
+
+#include "P6/Links/Bungee.h"
+#include "P6/Links/Chain.h"
+
+//helper functions / Utility functions
+#include "Utility/NumberRandomizer.h"
+
 float width = 800;
 float height = 800;
 
 
 //camera initialization
-OrthoCamera orthoCam({ 0,0,-400 }, { 0,1,0 }, { 0.1,0.1,1 }, height, width, width, true);
-PerspectiveCamera persCam({ 0,0,-400 }, { 0,1,0 }, { 0,0,1 }, 90.f, height, width, 800, false);//test view
+OrthoCamera orthoCam({ 0,0, 400 }, { 0,1,0 }, { 0.1,0.1,1 }, height, width, width, true);
+PerspectiveCamera persCam({ 0,0,400 }, { 0,1,0 }, { 0,0,1 }, 90.f, height, width, 800, false);//test view
 glm::vec3 moveCam({ 0, 0, 0 });
 
 float pitch = 0.0f;
@@ -96,7 +115,7 @@ glm::vec3 camRotation(bool vertical, bool pos) {
     camPos.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
     camPos.y = sin(glm::radians(pitch)) * 400;
     camPos.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch)) * 400;
-    return  camPos;
+    return  -camPos;
 
 }
 
@@ -129,8 +148,6 @@ void processInput(GLFWwindow* window)
     }
 
 
-
-
     if (glfwGetKey(window, GLFW_KEY_A)) {
         moveCam = camRotation(false, false);
     }
@@ -150,25 +167,12 @@ void processInput(GLFWwindow* window)
         if (isPaused) isPaused = false;
         else isPaused = true;
     }
-
-
-
-
-
 }
 
-
-int GetRandomInt(int start, int end) {
-    return (rand() % end) + start;
-}
-
-float GetRandomFloat(float start, float end) {
-    return start + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (end - start)));
-}
 
 int main(void)
 {
-    
+
     GLFWwindow* window;
 
     /* Initialize the library */
@@ -178,23 +182,23 @@ int main(void)
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(width, height , "JAROCO Engine", NULL, NULL);
+    window = glfwCreateWindow(width, height, "JAROCO Engine", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         return -1;
     }
 
-    
-;    /* Make the window's context current */
+
+    ;    /* Make the window's context current */
     glfwMakeContextCurrent(window);
     gladLoadGL();
 
 
     Shader sphereShader("Shaders/vertShader.vert", "Shaders/fragShader.frag");
-        
 
-   
+
+
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -250,27 +254,27 @@ int main(void)
         );
 
         fullVertexData.push_back(
-            attributes.texcoords[(vData.texcoord_index * 2) +1]
+            attributes.texcoords[(vData.texcoord_index * 2) + 1]
         );
 
-        
-      
+
+
     }
 
     //=================VBO/VAO==========//
 
     unsigned int VBO, VAO;
-    
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-   
+
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fullVertexData.size(), fullVertexData.data(), GL_DYNAMIC_DRAW);
 
-   
+
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -285,45 +289,83 @@ int main(void)
     glEnableVertexAttribArray(2);
 
 
-    
-    
-    
+
+
+
 
     //Render Particles
-    std::list<RenderParticle*> RenderParticles;
-  
+    std::list<P6::RenderParticle*>* RenderParticles = new std::list<P6::RenderParticle*>;
+
     //P6 WORLD
-    P6::PhysicsWorld pWorld = P6::PhysicsWorld();
+    P6::PhysicsWorld* pWorld = new P6::PhysicsWorld();
 
-    
+    //PARTICLES
+    //p1
+    P6::P6Particle* particle1 = new P6::P6Particle(
+        5.0f,
+        P6::MyVector(-70, 60, 0),
+        P6::MyVector(0, 0, 0),
+        P6::MyVector(0.f, 0.f, 0.f)
+    );
 
+    particle1->radius = 20.0f;
+    float sc = particle1->radius;
+    P6::MyVector particleScale = { sc,sc,sc };
 
-    
+    P6::MyVector color = P6::MyVector(0, 0, 1.f);
+    Model3D* particleModel = new Model3D({ 0,0,0 });
+    particleModel->setScale(particleScale.x, particleScale.y, particleScale.z);
 
-   
-   
+    particle1->lifeSpan = 100.f;
+    pWorld->AddParticle(particle1);
+    P6::RenderParticle* newRP = new P6::RenderParticle(particle1, particleModel, color, &sphereShader, &VAO, &fullVertexData);
+    RenderParticles->push_back(newRP);
 
-    //FIREWORK PARTICLES
-    P6::MyVector color = P6::MyVector(1.0, 0.0, 0.0);
-    int particleAmount = 0;
-    int fireworkParticleTracker = 1;
+    //p2
+    color = P6::MyVector(1.f, 0, 0);
+    P6::P6Particle* particle2 = new P6::P6Particle(
+        5.0f,
+        P6::MyVector(70, 60, 0),
+        P6::MyVector(0, 0, 0),
+        P6::MyVector(0.f, 0.f, 0.f)
+    );
+    particle2->radius = 20.f;
+    sc = particle2->radius;
+    particleScale = { sc,sc,sc };
+    particle2->lifeSpan = 100.f;
+    pWorld->AddParticle(particle2);
+    P6::RenderParticle* newRP2 = new P6::RenderParticle(particle2, particleModel, color, &sphereShader, &VAO, &fullVertexData);
+    RenderParticles->push_back(newRP2);
 
-    std::cout << "How many particles? ";
-    std::cin >> particleAmount;
+    //adding force
+    //particle1->AddForce({-1000.0f,0,0});
 
-    srand((unsigned)time(0));
-    float randomXForce = 0, randomYForce = 0, randomZForce = 0, randomSize = 0;
-    int coneRadius = 2500;
+    //SPRING
+    P6::AnchoredSpring aSpring = P6::AnchoredSpring(P6::MyVector(70, 0,0), 0.5f, 10.0f);
+    //pWorld->forceRegistry.Add(particle2, &aSpring);
 
-    
+    P6::ParticleSpring pSpring = P6::ParticleSpring(particle1, 5, 1);
+    //pWorld->forceRegistry.Add(particle2, &pSpring);
 
+    P6::Bungee bungeeLink = P6::Bungee(P6::MyVector(-70, 0, 0), 100.f);
+    pWorld->forceRegistry.Add(particle1, &bungeeLink);
+
+    P6::Chain chainLink = P6::Chain(P6::MyVector(70, 0, 0), 100.f);
+    pWorld->forceRegistry.Add(particle2, &chainLink);
 
     //drag
     /*
     P6::DragForceGenerator drag = P6::DragForceGenerator(0.14, 0.1);
     pWorld.forceRegistry.Add(&p1, &drag);*/
 
+    //Line initialiez
+    RenderLine renderLine(
+        orthoCam.getProjection()
+    );
 
+    RenderLine renderLine2(
+        orthoCam.getProjection()
+    );
 
     //clock initialiaze
     using clock = std::chrono::high_resolution_clock;
@@ -332,9 +374,10 @@ int main(void)
     std::chrono::nanoseconds curr_ns(0);
     std::chrono::nanoseconds ns_tracker(0);
     int buffer;
-   
 
-    
+    srand((unsigned)time(0));
+
+
 
     //1 m = 1 unit
     //1m = 1 px
@@ -355,66 +398,34 @@ int main(void)
 
             curr_ns -= curr_ns;
 
-            
+
             //fireworks
-            
+
 
             //updates here
             if (!isPaused) {
-                if (fireworkParticleTracker < particleAmount) {
-                    Model3D* newFWPM = new Model3D({ 0,0,0 }); //FWPM short for firework particle model
-                    P6::P6Particle* newFWP = new P6::P6Particle(
-                        1.0f,
-                        P6::MyVector(0, -height / 2.0f + 10.0f, 0),
-                        P6::MyVector(0, 0, 0),
-                        P6::MyVector(0.f, 0.f, 0.f)
-                    );
-
-                    //FORCE
-                    randomXForce = GetRandomInt(0, coneRadius);
-                    if (GetRandomInt(1, 2) <= 1) randomXForce *= -1;
-
-                    randomZForce = GetRandomInt(0, coneRadius);
-                    if (GetRandomInt(1, 2) <= 1) randomZForce *= -1;
-
-                    randomYForce = GetRandomInt(1000, 6000);
-                    //if (GetRandomInt(1, 2) <= 1) randomYForce *= -1;
-
-                    //std::cout << "Xforce: " << randomXForce << std::endl;
-                    //std::cout << "Yforce: " << randomYForce << std::endl << std::endl;
-
-                    newFWP->AddForce(P6::MyVector(randomXForce, randomYForce, randomZForce));
-
-                    //CHANGING COLOR
-                    color = P6::MyVector(
-                        GetRandomFloat(0.0f, 1.0f), //r
-                        GetRandomFloat(0.0f, 1.0f), //g
-                        GetRandomFloat(0.0f, 1.0f) //b
-                    );
-
-                    //CHANGING SIZE
-                    randomSize = GetRandomFloat(2.0f, 10.0f);
-                    //std::cout << "Rand size: " << randomSize << std::endl;
-                    newFWPM->setScale(randomSize, randomSize, randomSize);
-
-                    //GIVING LIFE
-                    newFWP->lifeSpan = GetRandomFloat(1.0f, 10.f);
-
-                    //ADDING IT TO THE LISTS
-                    pWorld.AddParticle(newFWP);
-                    RenderParticle* newRP = new RenderParticle(newFWP, newFWPM, color, &sphereShader, &VAO, &fullVertexData);
-                    RenderParticles.push_back(newRP);
-
-                    fireworkParticleTracker++;
-                }
-                pWorld.Update((float)ms.count() / 1000);
+                //fireworkHandler.Perform(RenderParticles, pWorld);
+                pWorld->Update((float)ms.count() / 1000);
+                //std::cout << "Particle at " << particle2->Position.x << " , " << particle2->Position.y << std::endl;
+                renderLine.Update(
+                    MyVector(70,0,0),
+                    particle2->Position,
+                    orthoCam.getProjection()
+                );
+                renderLine2.Update(
+                    MyVector(-70,0,0),
+                    particle1->Position,
+                    orthoCam.getProjection()
+                );
+                //std::cout << "P2 pos: " << particle2->Position.x << std::endl;
+                //contact.Resolve((float)ms.count() / 1000);
             }
             else {
-                std::cout << "Current particle count: " << RenderParticles.size() << std::endl;
+                std::cout << "Current particle count: " << RenderParticles->size() << std::endl;
             }
-            
-          
-            
+
+
+
         }
         //std::cout << "normal upd" << std::endl;
 
@@ -423,17 +434,17 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* Render here */
-        
-        
+
+
         //cameras
         P6::MyVector converter{ 0,0,0 };
 
         switch (camState) {
         case 0:
-            if (moveCam != glm::vec3{0, 0, 0}) {//this is for on camCreation making sure it doesnt set it to 0,0,0 on start
+            if (moveCam != glm::vec3{ 0, 0, 0 }) {//this is for on camCreation making sure it doesnt set it to 0,0,0 on start
                 orthoCam.setCameraPos(moveCam);//set camera pos
             }
-            
+
 
             converter = P6::MyVector{ orthoCam.getCameraPos().x,orthoCam.getCameraPos().y ,orthoCam.getCameraPos().z };//this makes a myVector for...
             orthoCam.setFront(glm::vec3{ -converter.Direction().x,-converter.Direction().y,-converter.Direction().z });
@@ -448,7 +459,7 @@ int main(void)
             if (moveCam != glm::vec3{ 0, 0, 0 }) {//this is for on camCreation making sure it doesnt set it to 0,0,0 on start
                 persCam.setCameraPos(moveCam);//set camera pos
             }
-            
+
             converter = P6::MyVector{ persCam.getCameraPos().x,persCam.getCameraPos().y ,persCam.getCameraPos().z };//this makes a myVector for...
             persCam.setFront(glm::vec3{ -converter.Direction().x,-converter.Direction().y,-converter.Direction().z });
             //THIS cause im insane, takes the the position, turns that to NDC and THEN we point AWAY so that it points hopefully to center.
@@ -457,12 +468,14 @@ int main(void)
             persCam.perfromSpecifics(&sphereShader);//put the data into shader
             break;
         }
-        
-        for (std::list<RenderParticle*>::iterator i = RenderParticles.begin(); i != RenderParticles.end(); i++) {
+
+        for (std::list<P6::RenderParticle*>::iterator i = RenderParticles->begin(); i != RenderParticles->end(); i++) {
             (*i)->Draw();
         }
-        
-       
+
+        //Line render
+        renderLine.Draw();
+        renderLine2.Draw();
         
 
         /* Swap front and back buffers */
@@ -470,18 +483,18 @@ int main(void)
 
         /* Poll for and process events */
         glfwPollEvents();
-        
+
     }
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 
-    
 
-   
 
-    
-    
-   
+
+
+
+
+
     glfwTerminate();
     return 0;
 }

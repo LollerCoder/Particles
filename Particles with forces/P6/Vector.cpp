@@ -17,6 +17,13 @@ MyVector P6::MyVector::operator+(const MyVector v)
 		this->z + v.z);
 }
 
+MyVector P6::MyVector::operator-(const MyVector v)
+{
+	return MyVector(this->x - v.x,
+		this->y - v.y,
+		this->z - v.z);
+}
+
 MyVector P6::MyVector::operator*(float v)
 {
 	return MyVector(this->x * v,
@@ -55,6 +62,11 @@ void MyVector::operator *= (const MyVector v) {
 float MyVector::Magnitude() {
 	
 	return abs(sqrt(this->x  * this->x + this->y * this->y + this->z * this->z));
+}
+
+float P6::MyVector::SquareMagnitude()
+{
+	return (this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
 MyVector MyVector::Direction() {
