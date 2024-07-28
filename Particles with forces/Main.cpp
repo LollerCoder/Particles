@@ -300,19 +300,41 @@ int main(void)
     P6::PhysicsWorld* pWorld = new P6::PhysicsWorld();
     std::vector < P6::P6Particle*> particles;
 
+    //VAR
+    float cableLength, particleGap, particleRadius, gravityStrength;
+    P6::MyVector applyForce;
+
+    //ASK FOR INPUTS
+    std::cout << "Cable Length: ";
+    std::cin >> cableLength;
+    std::cout << "Particle Gap: ";
+    std::cin >> particleGap;
+    std::cout << "Particle Radius: ";
+    std::cin >> particleRadius;
+    std::cout << "Gravity Strength: ";
+    std::cin >> gravityStrength;
+    std::cout << "Apply Force" << std::endl;
+    std::cout << "X: ";
+    std::cin >> applyForce.x;
+    std::cout << "Y: ";
+    std::cin >> applyForce.y;
+    std::cout << "Z: ";
+    std::cin >> applyForce.z;
+
+    float p1Pos = -2 * particleGap;
+
     //PARTICLES
     for (int i = 0; i < 5; i++)
     {
-
         P6::P6Particle* p = new P6::P6Particle(
             50.0f,
-            P6::MyVector(-140 + (i*70), 60, 0),
+            P6::MyVector(p1Pos + (i*particleGap), 60, 0),
             P6::MyVector(0, 0, 0),
             P6::MyVector(0.f, 0.f, 0.f)
         );
 
         particles.push_back(p);
-        p->radius = 20.f;
+        p->radius = particleRadius;
         float sc = p->radius;
         P6::MyVector particleScale = { sc,sc,sc };
 
@@ -329,7 +351,7 @@ int main(void)
     //CABLES
     for (int i = 0; i < particles.size(); i++)
     {
-        P6::Cable* cableLink = new P6::Cable(P6::MyVector(-140 + (i*70), 0, 0), 100.f);
+        P6::Cable* cableLink = new P6::Cable(P6::MyVector(p1Pos + (i * particleGap), 0, 0), cableLength);
         pWorld->forceRegistry.Add(particles[i], cableLink);
     }
 
@@ -339,7 +361,6 @@ int main(void)
     pWorld.forceRegistry.Add(&p1, &drag);*/
 
     //render Line initialiez
-    float rlXpos = -140;
     std::vector<RenderLine*> renderLines;
 
     for (int i = 0; i < 5; i++)
@@ -390,7 +411,7 @@ int main(void)
                 for (int i = 0; i < renderLines.size(); i++)
                 {
                     renderLines[i]->Update(
-                        MyVector(rlXpos + (i*70), 0, 0),
+                        MyVector(p1Pos + (i * particleGap), 0, 0),
                         particles[i]->Position,
                         orthoCam.getProjection()
                     );
