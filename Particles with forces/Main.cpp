@@ -323,6 +323,8 @@ int main(void)
 
     float p1Pos = -2 * particleGap;
 
+    GravityForceGenerator Gravity = GravityForceGenerator(MyVector(0, gravityStrength, 0));
+
     //PARTICLES
     for (int i = 0; i < 5; i++)
     {
@@ -346,6 +348,8 @@ int main(void)
         pWorld->AddParticle(p);
         P6::RenderParticle* newRP = new P6::RenderParticle(p, particleModel, color, &sphereShader, &VAO, &fullVertexData);
         RenderParticles->push_back(newRP);
+
+        pWorld->forceRegistry.Add(p, &Gravity);
     }
 
     //CABLES

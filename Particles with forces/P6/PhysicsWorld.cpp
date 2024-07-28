@@ -4,8 +4,6 @@ using namespace P6;
 
 void PhysicsWorld::AddParticle(P6Particle* toAdd) {
 	Particles.push_back(toAdd);
-
-	forceRegistry.Add(toAdd, &Gravity);
 }
 
 void P6::PhysicsWorld::AddContact(P6Particle* p1, P6Particle* p2, float restitution, MyVector contactNormal, float depth)
