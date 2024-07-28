@@ -54,6 +54,7 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 
 #include "P6/Links/Bungee.h"
 #include "P6/Links/Chain.h"
+#include "P6/Links/Cable.h"
 
 //helper functions / Utility functions
 #include "Utility/NumberRandomizer.h"
@@ -297,21 +298,24 @@ int main(void)
 
     //P6 WORLD
     P6::PhysicsWorld* pWorld = new P6::PhysicsWorld();
+    std::vector < P6::P6Particle*> particles;
 
     //PARTICLES
     //p1
     P6::P6Particle* particle1 = new P6::P6Particle(
-        5.0f,
+        50.0f,
         P6::MyVector(-70, 60, 0),
         P6::MyVector(0, 0, 0),
         P6::MyVector(0.f, 0.f, 0.f)
     );
 
+    particles.push_back(particle1);
+
     particle1->radius = 20.0f;
     float sc = particle1->radius;
     P6::MyVector particleScale = { sc,sc,sc };
 
-    P6::MyVector color = P6::MyVector(0, 0, 1.f);
+    P6::MyVector color = P6::MyVector(1.f, 0, 0);
     Model3D* particleModel = new Model3D({ 0,0,0 });
     particleModel->setScale(particleScale.x, particleScale.y, particleScale.z);
 
@@ -321,13 +325,15 @@ int main(void)
     RenderParticles->push_back(newRP);
 
     //p2
-    color = P6::MyVector(1.f, 0, 0);
     P6::P6Particle* particle2 = new P6::P6Particle(
-        5.0f,
-        P6::MyVector(70, 60, 0),
+        50.0f,
+        P6::MyVector(-160, 110, 0),
         P6::MyVector(0, 0, 0),
         P6::MyVector(0.f, 0.f, 0.f)
     );
+
+    particles.push_back(particle2);
+
     particle2->radius = 20.f;
     sc = particle2->radius;
     particleScale = { sc,sc,sc };
@@ -336,35 +342,53 @@ int main(void)
     P6::RenderParticle* newRP2 = new P6::RenderParticle(particle2, particleModel, color, &sphereShader, &VAO, &fullVertexData);
     RenderParticles->push_back(newRP2);
 
-    //adding force
-    //particle1->AddForce({-1000.0f,0,0});
+    //p3
+    P6::P6Particle* particle3 = new P6::P6Particle(
+        50.0f,
+        P6::MyVector(0,0,0),
+        P6::MyVector(0, 0, 0),
+        P6::MyVector(0.f, 0.f, 0.f)
+    );
 
-    //SPRING
-    P6::AnchoredSpring aSpring = P6::AnchoredSpring(P6::MyVector(70, 0,0), 0.5f, 10.0f);
-    //pWorld->forceRegistry.Add(particle2, &aSpring);
+    particles.push_back(particle3);
 
-    P6::ParticleSpring pSpring = P6::ParticleSpring(particle1, 5, 1);
-    //pWorld->forceRegistry.Add(particle2, &pSpring);
+    particle3->radius = 20.f;
+    sc = particle3->radius;
+    particleScale = { sc,sc,sc };
+    particle3->lifeSpan = 100.f;
+    pWorld->AddParticle(particle3);
+    P6::RenderParticle* newRP3 = new P6::RenderParticle(particle3, particleModel, color, &sphereShader, &VAO, &fullVertexData);
+    RenderParticles->push_back(newRP3);
 
+
+
+
+
+        //LINKS
     P6::Bungee bungeeLink = P6::Bungee(P6::MyVector(-70, 0, 0), 100.f);
     pWorld->forceRegistry.Add(particle1, &bungeeLink);
 
-    P6::Chain chainLink = P6::Chain(P6::MyVector(70, 0, 0), 100.f);
+    P6::Chain chainLink = P6::Chain(P6::MyVector(-140, 0, 0), 100.f);
     pWorld->forceRegistry.Add(particle2, &chainLink);
+
+    P6::Cable cableLink1 = P6::Cable(P6::MyVector(0, 0, 0), 100.f);
+    pWorld->forceRegistry.Add(particle3, &cableLink1);
 
     //drag
     /*
     P6::DragForceGenerator drag = P6::DragForceGenerator(0.14, 0.1);
     pWorld.forceRegistry.Add(&p1, &drag);*/
 
-    //Line initialiez
-    RenderLine renderLine(
-        orthoCam.getProjection()
-    );
+    //render Line initialiez
+    float rlXpos = -140;
+    std::vector<RenderLine*> renderLines;
 
-    RenderLine renderLine2(
-        orthoCam.getProjection()
-    );
+    for (int i = 0; i < 5; i++)
+    {
+        renderLines.push_back(
+            new RenderLine(orthoCam.getProjection())
+        );
+    }
 
     //clock initialiaze
     using clock = std::chrono::high_resolution_clock;
@@ -376,7 +400,7 @@ int main(void)
 
     srand((unsigned)time(0));
 
-
+    
 
     //1 m = 1 unit
     //1m = 1 px
@@ -406,16 +430,15 @@ int main(void)
                 //fireworkHandler.Perform(RenderParticles, pWorld);
                 pWorld->Update((float)ms.count() / 1000);
                 //std::cout << "Particle at " << particle2->Position.x << " , " << particle2->Position.y << std::endl;
-                renderLine.Update(
-                    MyVector(70,0,0),
-                    particle2->Position,
-                    orthoCam.getProjection()
-                );
-                renderLine2.Update(
-                    MyVector(-70,0,0),
-                    particle1->Position,
-                    orthoCam.getProjection()
-                );
+                for (int i = 0; i < 3; i++)
+                {
+                    renderLines[i]->Update(
+                        MyVector(rlXpos + (i*70), 0, 0),
+                        particles[i]->Position,
+                        orthoCam.getProjection()
+                    );
+                }
+
                 //std::cout << "P2 pos: " << particle2->Position.x << std::endl;
                 //contact.Resolve((float)ms.count() / 1000);
             }
@@ -473,9 +496,10 @@ int main(void)
         }
 
         //Line render
-        renderLine.Draw();
-        renderLine2.Draw();
-        
+        for (int i = 0; i < renderLines.size(); i++)
+        {
+            renderLines[i]->Draw();
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

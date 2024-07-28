@@ -152,6 +152,7 @@
     <ClCompile Include="P6\ForceGenerator.cpp" />
     <ClCompile Include="P6\ForceRegistry.cpp" />
     <ClCompile Include="P6\Links\Bungee.cpp" />
+    <ClCompile Include="P6\Links\Cable.cpp" />
     <ClCompile Include="P6\Links\Chain.cpp" />
     <ClCompile Include="P6\Links\ParticleLink.cpp" />
     <ClCompile Include="P6\Links\Rod.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="P6\ForceGenerator.h" />
     <ClInclude Include="P6\ForceRegistry.h" />
     <ClInclude Include="P6\Links\Bungee.h" />
+    <ClInclude Include="P6\Links\Cable.h" />
     <ClInclude Include="P6\Links\Chain.h" />
     <ClInclude Include="P6\Links\ParticleLink.h" />
     <ClInclude Include="P6\Links\Rod.h" />

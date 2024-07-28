@@ -10,7 +10,7 @@ namespace P6 {
 	public:
 		float length;
 		float currLength = 0;
-		float restitution = 0;
+		float restitution = 0.9;
 		MyVector anchorPoint;
 
 	public:
