@@ -304,7 +304,7 @@ int main(void)
     //p1
     P6::P6Particle* particle1 = new P6::P6Particle(
         50.0f,
-        P6::MyVector(-70, 60, 0),
+        P6::MyVector(-140, 60, 0),
         P6::MyVector(0, 0, 0),
         P6::MyVector(0.f, 0.f, 0.f)
     );
@@ -327,7 +327,7 @@ int main(void)
     //p2
     P6::P6Particle* particle2 = new P6::P6Particle(
         50.0f,
-        P6::MyVector(-160, 110, 0),
+        P6::MyVector(-70, 110, 0),
         P6::MyVector(0, 0, 0),
         P6::MyVector(0.f, 0.f, 0.f)
     );
