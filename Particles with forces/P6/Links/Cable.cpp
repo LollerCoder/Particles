@@ -24,9 +24,9 @@ void P6::Cable::UpdateForce(P6Particle* particle, float time)
         MyVector velocity = particle->Velocity;
 
         //apply normal force to the obj
-        MyVector normalComponent = direction * velocity.DotProduct(direction);
+        MyVector normalForce = direction * velocity.DotProduct(direction);
 
-        MyVector backVelocity = velocity - normalComponent;
+        MyVector backVelocity = velocity - normalForce;
         
         particle->Velocity = backVelocity;
     }

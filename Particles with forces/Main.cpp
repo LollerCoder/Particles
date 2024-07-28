@@ -50,7 +50,7 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 #include "Camera/OrthoCamera.h"
 #include "Camera/PerspectiveCamera.h"
 
-//activites
+
 
 #include "P6/Links/Bungee.h"
 #include "P6/Links/Chain.h"
@@ -73,10 +73,9 @@ float yaw = -90.0f;
 int camState = 0;
 
 
-//Fireworks
-bool isPaused = false;
+//for adding force
+bool spacePressed = false;
 
-std::vector <P6::P6Particle*> res;
 
 glm::vec3 camRotation(bool vertical, bool pos) {
     const float speed = 0.1f;
@@ -164,8 +163,7 @@ void processInput(GLFWwindow* window)
 
     //checks pausing
     if (glfwGetKey(window, GLFW_KEY_SPACE)) {
-        if (isPaused) isPaused = false;
-        else isPaused = true;
+        spacePressed = true;
     }
 }
 
@@ -350,6 +348,7 @@ int main(void)
         P6::RenderParticle* newRP = new P6::RenderParticle(p, particleModel, color, &sphereShader, &VAO, &fullVertexData);
         RenderParticles->push_back(newRP);
 
+        
         pWorld->forceRegistry.Add(p, &Gravity);
     }
 
@@ -362,10 +361,7 @@ int main(void)
         pWorld->forceRegistry.Add(particles[i], cableLink);
     }
 
-    //drag
-    /*
-    P6::DragForceGenerator drag = P6::DragForceGenerator(0.14, 0.1);
-    pWorld.forceRegistry.Add(&p1, &drag);*/
+    
 
     //render Line initialiez
     std::vector<RenderLine*> renderLines;
@@ -411,27 +407,27 @@ int main(void)
 
 
             //updates here
-            if (!isPaused) {
-                //fireworkHandler.Perform(RenderParticles, pWorld);
-                pWorld->Update((float)ms.count() / 1000);
-                //std::cout << "Particle at " << particle2->Position.x << " , " << particle2->Position.y << std::endl;
+            
+           
+            pWorld->Update((float)ms.count() / 1000);
+            if (spacePressed) {
+                spacePressed = false;
+                particles[0]->AddForce(applyForce);
+            }
+           
                 
-                //updating the render lines
-                for (int i = 0; i < renderLines.size(); i++)
-                {
-                    renderLines[i]->Update(
-                        MyVector(p1Pos + (i * particleGap), 0, 0),
-                        particles[i]->Position,
-                        orthoCam.getProjection()
-                    );
-                }
+            //updating the render lines
+            for (int i = 0; i < renderLines.size(); i++)
+            {
+                renderLines[i]->Update(
+                    MyVector(p1Pos + (i * particleGap), 0, 0),
+                    particles[i]->Position,
+                    orthoCam.getProjection()
+                );
+            }
 
-                //std::cout << "P2 pos: " << particle2->Position.x << std::endl;
-                //contact.Resolve((float)ms.count() / 1000);
-            }
-            else {
-                std::cout << "Current particle count: " << RenderParticles->size() << std::endl;
-            }
+           
+            
 
 
 
