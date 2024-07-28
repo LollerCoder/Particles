@@ -51,7 +51,6 @@ constexpr std::chrono::nanoseconds timestep(30ms);
 #include "Camera/PerspectiveCamera.h"
 
 //activites
-#include "Activities/FireworkHandler.h"
 
 #include "P6/Links/Bungee.h"
 #include "P6/Links/Chain.h"
