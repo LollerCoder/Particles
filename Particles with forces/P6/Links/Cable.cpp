@@ -1,29 +1,36 @@
 /*
-
+    This will make it so that the ball is always x lenght from the anchorpoint. Velocity is maintained by reducing it with displacement
+    direction multiplied to velocity
 */
 
 #include "Cable.h"
 
 void P6::Cable::UpdateForce(P6Particle* particle, float time)
 {
-	this->currLength = (this->anchorPoint - particle->Position).Magnitude();
-	if (this->currLength < this->length || particle->Position.y >= 0) return;
+    MyVector pos = particle->Position;
 
-	MyVector force;
+    //displacement
+    MyVector displacement = pos - this->anchorPoint;
+    // use to check 
+    float mag = displacement.Magnitude();
 
-	if (this->currLength > this->length && particle->Position.y >= 0)
-	{
-		std::cout << "Here";
-		MyVector direction = this->anchorPoint - particle->Position;
-		direction *= particle->Velocity;
+    if (mag > this->length) {
+        //just set the position to max length if its violating it.
+        MyVector direction = displacement.Direction();
+        pos = this->anchorPoint + direction * this->length;
+        particle->Position = pos;
 
-		force = direction * particle->mass;
-	}
-	else
-	{
-		std::cout << "Here2";
-		force = (MyVector(0, 9.8f, 0) + particle->Velocity * -1) * particle->mass;
-	}
+       //velocity that will be screwed with
+        MyVector velocity = particle->Velocity;
 
-	particle->AddForce(force);
+        //apply normal force to the obj
+        MyVector normalComponent = direction * velocity.DotProduct(direction);
+
+        MyVector backVelocity = velocity - normalComponent;
+        
+        particle->Velocity = backVelocity;
+    }
+    //add force is gone because all we did was add normal force.
+    
+    
 }
