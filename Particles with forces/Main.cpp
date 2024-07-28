@@ -301,78 +301,37 @@ int main(void)
     std::vector < P6::P6Particle*> particles;
 
     //PARTICLES
-    //p1
-    P6::P6Particle* particle1 = new P6::P6Particle(
-        50.0f,
-        P6::MyVector(-140, 60, 0),
-        P6::MyVector(0, 0, 0),
-        P6::MyVector(0.f, 0.f, 0.f)
-    );
+    for (int i = 0; i < 5; i++)
+    {
 
-    particles.push_back(particle1);
+        P6::P6Particle* p = new P6::P6Particle(
+            50.0f,
+            P6::MyVector(-140 + (i*70), 60, 0),
+            P6::MyVector(0, 0, 0),
+            P6::MyVector(0.f, 0.f, 0.f)
+        );
 
-    particle1->radius = 20.0f;
-    float sc = particle1->radius;
-    P6::MyVector particleScale = { sc,sc,sc };
+        particles.push_back(p);
+        p->radius = 20.f;
+        float sc = p->radius;
+        P6::MyVector particleScale = { sc,sc,sc };
 
-    P6::MyVector color = P6::MyVector(1.f, 0, 0);
-    Model3D* particleModel = new Model3D({ 0,0,0 });
-    particleModel->setScale(particleScale.x, particleScale.y, particleScale.z);
+        P6::MyVector color = P6::MyVector(1.f, 0, 0);
+        Model3D* particleModel = new Model3D({ 0,0,0 });
+        particleModel->setScale(particleScale.x, particleScale.y, particleScale.z);
 
-    particle1->lifeSpan = 100.f;
-    pWorld->AddParticle(particle1);
-    P6::RenderParticle* newRP = new P6::RenderParticle(particle1, particleModel, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles->push_back(newRP);
+        p->lifeSpan = 100.f;
+        pWorld->AddParticle(p);
+        P6::RenderParticle* newRP = new P6::RenderParticle(p, particleModel, color, &sphereShader, &VAO, &fullVertexData);
+        RenderParticles->push_back(newRP);
+    }
 
-    //p2
-    P6::P6Particle* particle2 = new P6::P6Particle(
-        50.0f,
-        P6::MyVector(-70, 110, 0),
-        P6::MyVector(0, 0, 0),
-        P6::MyVector(0.f, 0.f, 0.f)
-    );
-
-    particles.push_back(particle2);
-
-    particle2->radius = 20.f;
-    sc = particle2->radius;
-    particleScale = { sc,sc,sc };
-    particle2->lifeSpan = 100.f;
-    pWorld->AddParticle(particle2);
-    P6::RenderParticle* newRP2 = new P6::RenderParticle(particle2, particleModel, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles->push_back(newRP2);
-
-    //p3
-    P6::P6Particle* particle3 = new P6::P6Particle(
-        50.0f,
-        P6::MyVector(0,0,0),
-        P6::MyVector(0, 0, 0),
-        P6::MyVector(0.f, 0.f, 0.f)
-    );
-
-    particles.push_back(particle3);
-
-    particle3->radius = 20.f;
-    sc = particle3->radius;
-    particleScale = { sc,sc,sc };
-    particle3->lifeSpan = 100.f;
-    pWorld->AddParticle(particle3);
-    P6::RenderParticle* newRP3 = new P6::RenderParticle(particle3, particleModel, color, &sphereShader, &VAO, &fullVertexData);
-    RenderParticles->push_back(newRP3);
-
-
-
-
-
-        //LINKS
-    P6::Bungee bungeeLink = P6::Bungee(P6::MyVector(-70, 0, 0), 100.f);
-    pWorld->forceRegistry.Add(particle1, &bungeeLink);
-
-    P6::Chain chainLink = P6::Chain(P6::MyVector(-140, 0, 0), 100.f);
-    pWorld->forceRegistry.Add(particle2, &chainLink);
-
-    P6::Cable cableLink1 = P6::Cable(P6::MyVector(0, 0, 0), 100.f);
-    pWorld->forceRegistry.Add(particle3, &cableLink1);
+    //CABLES
+    for (int i = 0; i < particles.size(); i++)
+    {
+        P6::Cable* cableLink = new P6::Cable(P6::MyVector(-140 + (i*70), 0, 0), 100.f);
+        pWorld->forceRegistry.Add(particles[i], cableLink);
+    }
 
     //drag
     /*
@@ -399,8 +358,6 @@ int main(void)
     int buffer;
 
     srand((unsigned)time(0));
-
-    
 
     //1 m = 1 unit
     //1m = 1 px
@@ -430,7 +387,7 @@ int main(void)
                 //fireworkHandler.Perform(RenderParticles, pWorld);
                 pWorld->Update((float)ms.count() / 1000);
                 //std::cout << "Particle at " << particle2->Position.x << " , " << particle2->Position.y << std::endl;
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < renderLines.size(); i++)
                 {
                     renderLines[i]->Update(
                         MyVector(rlXpos + (i*70), 0, 0),
